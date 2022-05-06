@@ -1,0 +1,59 @@
+<!DOCTYPE html> 
+<html>
+<head> 
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" /> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<title>Hello, World</title> 
+<style type="text/css"> 
+html{height:100%} 
+body{height:100%;margin:0px;padding:0px} 
+#container{height:100%} 
+</style> 
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=1.0&type=webgl&ak=UTMNSFGG16djF6yQVN7cBTpyLPwEHHPw">
+</script>
+</head> 
+  
+<body> 
+<div id="container"></div>
+<script type="text/javascript">
+var map = new BMapGL.Map("container");
+// 创建地图实例 
+var point = new BMapGL.Point(114.06455184,22.54845664);
+// 创建点坐标 
+map.centerAndZoom(point, 15);
+map.addControl(new BMapGL.LocationControl());
+
+var geolocation = new BMapGL.Geolocation();
+geolocation.enableSDKLocation();
+geolocation.getCurrentPosition(function(r){
+    // if(this.getStatus() == BMAP_STATUS_SUCCESS){
+    //     var mk = new BMapGL.Marker(r.point);
+    //     map.addOverlay(mk);
+    //     map.panTo(r.point);
+    //     alert('您的位置：' + r.point.lng + ',' + r.point.lat);
+    // }
+    // else {
+    //     alert('failed' + this.getStatus());
+    // } 
+    if(this.getStatus() == BMAP_STATUS_SUCCESS){
+        var mk = new BMap.Marker(r.point);
+        map.addOverlay(mk);//标出所在地
+        map.panTo(r.point);//地图中心移动
+        //alert('您的位置：'+r.point.lng+','+r.point.lat);
+        var point = new BMap.Point(r.point.lng,r.point.lat);//用所定位的经纬度查找所在地省市街道等信息
+        var gc = new BMap.Geocoder();
+        gc.getLocation(point, function(rs){
+           var addComp = rs.addressComponents; console.log(rs.address);//地址信息
+           alert(rs.address);//弹出所在地址
+
+        });
+    }else {
+        alert('failed'+this.getStatus());
+    }       
+});
+// 114.06455184,22.54845664
+
+// 初始化地图，设置中心点坐标和地图级别 
+</script> 
+</body> 
+</html>
