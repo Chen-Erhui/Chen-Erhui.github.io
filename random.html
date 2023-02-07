@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>random</title>
+</head>
+<body>
+    
+</body>
+<script>
+    var myRed = [];
+    var mybule = [];
+    while(myRed.length < 5) {
+        var theRed = Math.ceil(Math.random() * 35);
+        if (myRed.indexOf(theRed) < 0) {
+            myRed.push(theRed);
+        }
+    }
+    while(mybule.length < 2) {
+        var theBlue = Math.ceil(Math.random() * 12);
+        if (mybule.indexOf(theBlue) < 0) {
+            mybule.push(theBlue);
+        }
+    }
+    myRed.sort(function(a, b) {
+        return a-b;
+    })
+    mybule.sort(function(a, b) {
+        return a-b;
+    })
+    console.log('red', myRed);
+    console.log('blue', mybule);
+    alert('red:'+ myRed + '\n' + 'blue:' + mybule);
+</script>
+</html>
