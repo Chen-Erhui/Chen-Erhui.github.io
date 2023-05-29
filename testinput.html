@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9,chrome=1" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style type="text/css">
+        html{
+            -webkit-filter:grayscale(100%);
+            -moz-filter:grayscale(100%);
+            -ms-filter:grayscale(100%);
+            -o-filter:grayscale(100%);
+            filter:grayscale(100%);
+            filter:progid:DXImageTransform.Microsoft.BasicImage(grayscale=1)
+        }
+        *{
+            -moz-filter: grayscale(100%); 
+            -ms-filter: grayscale(100%); 
+            -o-filter: grayscale(100%); 
+            filter: gray;
+        }
+    </style>
+</head>
+<body>
+    <div class="father">
+        <div class="child1"></div>
+        <div class="child2"></div>
+        <div class="child3"></div>
+        <p style="color: yellow;">文字啊啊啊啊啊</p>
+    </div>
+    <p style="color: yellow;">文字啊啊啊啊啊</p>
+    <p style="color: yellow;">文字啊啊啊啊啊</p>
+    <input type="" name="">
+</body>
+<style>
+    .father{
+        background-color: #ddd;
+        width:400px;
+        height:400px;
+        display: flex;
+        flex-direction:row;
+        flex-wrap: wrap;
+        justify-content:space-around;
+        align-items:center;
+    }
+    .child1{
+        background-color: rgb(121, 145, 64);
+        width:100px;
+        height:100px;
+    }
+    .child2{
+        background-color: rgb(78, 170, 177);
+        width:100px;
+        height:200px;
+    }
+    .child3{
+        background-color: rgb(157, 122, 161);
+        width:100px;
+        height:100px;
+    }
+</style>
+<script>
+    function time1() {
+        return new Promise(function() {
+            setTimeout(function() {
+                console.log('3s');
+            },3000);
+        });
+    }
+    function time2() {
+        return new Promise(function() {
+            setTimeout(function() {
+                console.log('3ss');
+            },3000);
+        });
+    }
+    function time3() {
+        return new Promise(function() {
+            setTimeout(function() {
+                console.log('3sss');
+            },3000);
+        });
+    }
+    async function doit() {
+        await time1();
+        await time2();
+        await time3();
+    }
+    doit();
+</script>
+</html>
