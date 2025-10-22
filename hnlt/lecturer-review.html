@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>讲师审核管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            /* max-width: 1200px; */
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: #d82525;
+            color: white;
+            padding: 15px 30px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .filter-section {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-label {
+            font-weight: 500;
+            color: #555;
+            white-space: nowrap;
+        }
+        
+        input, select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            min-width: 120px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #d82525;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-query {
+            background: #d82525;
+            color: white;
+        }
+        
+        .btn-query:hover {
+            background: #2980b9;
+        }
+        
+        .btn-reset {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-reset:hover {
+            background: #d5d5d5;
+        }
+        
+        .table-container {
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+        
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            background: #d82525;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+        
+        footer {
+            padding: 15px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #eaeaea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #777;
+        }
+        
+        .pagination {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .page-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .page-btn.active {
+            background: #d82525;
+            color: white;
+            border-color: #d82525;
+        }
+        
+        @media (max-width: 768px) {
+            .filter-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .filter-item {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            input, select {
+                min-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>讲师审核管理</h1>
+        </header>
+        
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-item">
+                    <span class="filter-label">讲师名称</span>
+                    <input type="text" placeholder="请输入讲师名称">
+                </div>
+                
+                <div class="filter-item">
+                    <span class="filter-label">讲师部门</span>
+                    <input type="text" placeholder="请输入讲师部门">
+                </div>
+                
+                <div class="filter-item">
+                    <span class="filter-label">报送状态</span>
+                    <select>
+                        <option value="">全部</option>
+                        <option value="draft">草稿</option>
+                        <option value="submitted">已报送</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <span class="filter-label">审核状态</span>
+                    <select>
+                        <option value="">全部</option>
+                        <option value="unreviewed">未审核</option>
+                        <option value="reviewed">已审核</option>
+                        <option value="rejected">已驳回</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-query">查询</button>
+                <button class="btn btn-reset">重置</button>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>讲师名称</th>
+                        <th>账号</th>
+                        <th>讲师类型</th>
+                        <th>共享讲师</th>
+                        <th>讲师级别</th>
+                        <th>讲师部门</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>吴志远</td>
+                        <td>wuzhiyuan</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <button class="action-btn"><a href="./lecturer-review-edit.html" style="color:#fff;text-decoration: none;">去审核</a></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>康远</td>
+                        <td>kangyuan</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <button class="action-btn"><a href="./lecturer-review-edit.html" style="color:#fff;text-decoration: none;">去审核</a></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>吴建华</td>
+                        <td>wujianhua</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <button class="action-btn"><a href="./lecturer-review-edit.html" style="color:#fff;text-decoration: none;">去审核</a></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>文齐</td>
+                        <td>wenqi</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <button class="action-btn"><a href="./lecturer-review-edit.html" style="color:#fff;text-decoration: none;">去审核</a></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>王志向</td>
+                        <td>wangzhixiang</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <button class="action-btn"><a href="./lecturer-review-edit.html" style="color:#fff;text-decoration: none;">去审核</a></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>马志</td>
+                        <td>mazhi</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <button class="action-btn"><a href="./lecturer-review-edit.html" style="color:#fff;text-decoration: none;">去审核</a></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>陈晨</td>
+                        <td>chenchen</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <button class="action-btn"><a href="./lecturer-review-edit.html" style="color:#fff;text-decoration: none;">去审核</a></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <footer>
+            <div>共7条记录</div>
+            <div class="pagination">
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">下一页</button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 查询按钮功能
+        document.querySelector('.btn-query').addEventListener('click', function() {
+            const name = document.querySelector('input[placeholder="请输入讲师名称"]').value;
+            const department = document.querySelector('input[placeholder="请输入讲师部门"]').value;
+            const reportStatus = document.querySelectorAll('select')[0].value;
+            const reviewStatus = document.querySelectorAll('select')[1].value;
+            
+            alert(`执行查询:\n讲师名称: ${name}\n讲师部门: ${department}\n报送状态: ${reportStatus || '全部'}\n审核状态: ${reviewStatus || '全部'}`);
+        });
+        
+        // 重置按钮功能
+        document.querySelector('.btn-reset').addEventListener('click', function() {
+            document.querySelector('input[placeholder="请输入讲师名称"]').value = '';
+            document.querySelector('input[placeholder="请输入讲师部门"]').value = '';
+            document.querySelectorAll('select')[0].value = '';
+            document.querySelectorAll('select')[1].value = '';
+            
+            alert('筛选条件已重置');
+        });
+        
+        // 去审核按钮功能
+        document.querySelectorAll('.action-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const name = row.cells[1].textContent;
+                const id = row.cells[2].textContent;
+                
+                // alert(`进入审核页面: ${name} (账号: ${id})`);
+            });
+        });
+        
+        // 分页按钮交互
+        document.querySelectorAll('.page-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                if(this.textContent === '下一页') {
+                    alert('跳转到下一页');
+                    return;
+                }
+                
+                document.querySelectorAll('.page-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                this.classList.add('active');
+            });
+        });
+        
+        // 表头排序功能
+        document.querySelectorAll('th').forEach(header => {
+            header.addEventListener('click', function() {
+                if(this.cellIndex < 7) { // 排除操作列
+                    alert(`按列排序: ${this.textContent}`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

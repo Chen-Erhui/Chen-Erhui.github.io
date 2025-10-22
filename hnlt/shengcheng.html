@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>报告管理系统</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义主题 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563eb',
+            success: '#10b981',
+            warning: '#f59e0b',
+            danger: '#ef4444',
+            neutral: '#f3f4f6',
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+      .transition-custom {
+        transition: all 0.25s ease-in-out;
+      }
+    }
+  </style>
+  
+  <style>
+    /* 全局样式 */
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    
+    /* 动画效果 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fadeIn {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+    
+    .status-badge {
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+  <!-- 顶部导航栏 -->
+  <!-- <header class="bg-white shadow-sm fixed w-full top-0 z-40">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center space-x-2">
+          <i class="fa fa-file-text-o text-primary text-2xl"></i>
+          <h1 class="text-xl font-semibold text-primary">报告管理系统</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="hidden md:block">
+            <span class="text-sm text-gray-600">欢迎，管理员</span>
+          </div>
+          <img src="https://picsum.photos/id/1005/40/40" alt="用户头像" class="w-8 h-8 rounded-full object-cover">
+        </div>
+      </div>
+    </div>
+  </header> -->
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <!-- 列表页面 -->
+    <section id="list-section" class="animate-fadeIn">
+      <div class="bg-white rounded-lg shadow-sm mb-6">
+        <div class="p-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold">报告列表</h2>
+        </div>
+        
+        <!-- 搜索区域 -->
+        <div class="p-4 border-b border-gray-200">
+          <div class="flex flex-col md:flex-row md:items-center gap-4">
+            <div class="flex-grow">
+              <label for="search" class="block text-sm font-medium text-gray-700 mb-1">报告名称搜索</label>
+              <div class="relative">
+                <input type="text" id="search" placeholder="请输入报告名称" 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom">
+                <i class="fa fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="flex gap-3 items-end">
+              <button id="reset-btn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-custom flex items-center gap-1">
+                <i class="fa fa-refresh"></i>
+                <span>重置</span>
+              </button>
+              <button id="query-btn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-custom flex items-center gap-1">
+                <i class="fa fa-search"></i>
+                <span>查询</span>
+              </button>
+              <button id="add-btn" class="px-4 py-2 bg-success text-white rounded-md hover:bg-success/90 transition-custom flex items-center gap-1">
+                <i class="fa fa-plus"></i>
+                <span>新增</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 列表区域 -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">序号</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">报告名称</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">生成时间</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作人</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <!-- 列表项1 -->
+              <tr class="hover:bg-gray-50 transition-custom">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">2023年度学习总结报告</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-12-25 14:30:22</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">张三</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="status-badge bg-green-100 text-green-800">已完成</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <a href="#" class="text-primary hover:text-primary/80 mr-3 view-report" data-id="1">查看</a>
+                  <a href="#" class="text-gray-600 hover:text-gray-900 mr-3">编辑</a>
+                  <a href="#" class="text-danger hover:text-danger/80">删除</a>
+                </td>
+              </tr>
+              
+              <!-- 列表项2 -->
+              <tr class="hover:bg-gray-50 transition-custom">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">前端技能提升报告</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-11-18 09:15:47</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">李四</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="status-badge bg-green-100 text-green-800">已完成</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <a href="#" class="text-primary hover:text-primary/80 mr-3 view-report" data-id="2">查看</a>
+                  <a href="#" class="text-gray-600 hover:text-gray-900 mr-3">编辑</a>
+                  <a href="#" class="text-danger hover:text-danger/80">删除</a>
+                </td>
+              </tr>
+              
+              <!-- 列表项3 -->
+              <tr class="hover:bg-gray-50 transition-custom">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">年度学习计划报告</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-10-05 16:42:11</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">王五</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="status-badge bg-yellow-100 text-yellow-800">生成中</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <a href="#" class="text-primary hover:text-primary/80 mr-3 view-report" data-id="3">查看</a>
+                  <a href="#" class="text-gray-600 hover:text-gray-900 mr-3">编辑</a>
+                  <a href="#" class="text-danger hover:text-danger/80">删除</a>
+                </td>
+              </tr>
+              
+              <!-- 列表项4 -->
+              <tr class="hover:bg-gray-50 transition-custom">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">4</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">数据结构学习总结</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-09-20 11:08:33</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">赵六</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="status-badge bg-red-100 text-red-800">已失效</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <a href="#" class="text-primary hover:text-primary/80 mr-3 view-report" data-id="4">查看</a>
+                  <a href="#" class="text-gray-600 hover:text-gray-900 mr-3">编辑</a>
+                  <a href="#" class="text-danger hover:text-danger/80">删除</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- 分页区域 -->
+        <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+          <div class="text-sm text-gray-700">
+            显示 <span class="font-medium">1</span> 到 <span class="font-medium">4</span> 条，共 <span class="font-medium">24</span> 条记录
+          </div>
+          <div class="flex space-x-1">
+            <button class="px-3 py-1 border border-gray-300 rounded-md bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>
+              <i class="fa fa-chevron-left text-xs"></i>
+            </button>
+            <button class="px-3 py-1 border border-primary bg-primary text-white rounded-md">1</button>
+            <button class="px-3 py-1 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50">2</button>
+            <button class="px-3 py-1 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50">3</button>
+            <button class="px-3 py-1 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50">4</button>
+            <button class="px-3 py-1 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50">5</button>
+            <button class="px-3 py-1 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50">
+              <i class="fa fa-chevron-right text-xs"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 报告预览区域 (默认隐藏) -->
+    <section id="preview-section" class="hidden animate-fadeIn">
+      <div class="bg-white rounded-lg shadow-sm">
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+          <div class="flex items-center">
+            <button id="back-to-list" class="text-gray-600 hover:text-primary mr-4 transition-custom">
+              <i class="fa fa-arrow-left"></i>
+            </button>
+            <h2 class="text-lg font-semibold">报告预览</h2>
+          </div>
+          <button id="download-report" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-custom flex items-center gap-1">
+            <i class="fa fa-download"></i>
+            <span>下载报告</span>
+          </button>
+        </div>
+        
+        <!-- 报告内容 -->
+        <div class="p-6 md:p-8">
+          <!-- 报告标题区域 -->
+          <div class="text-center mb-10 pb-6 border-b border-gray-200">
+            <h1 id="preview-title" class="text-2xl md:text-3xl font-bold mb-4">个人学习年度报告</h1>
+            <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-500">
+              <p><span class="font-medium text-gray-700">报告周期：</span><span id="preview-date-range">2023年1月1日 - 2023年12月31日</span></p>
+              <p><span class="font-medium text-gray-700">生成日期：</span><span id="preview-generated-date">2023年12月31日</span></p>
+              <p><span class="font-medium text-gray-700">报告人：</span><span id="preview-author">系统用户</span></p>
+            </div>
+          </div>
+          
+          <!-- 报告正文 -->
+          <div class="prose max-w-none">
+            <h2>一、年度学习概况</h2>
+            <p>本年度共参加集中学习和线上课程学习共计36次，累计学习时长达1250小时，较上一年度增长25%。学习内容涵盖党的理论教育、党纪党规学习、时政形势教育、业务能力提升等多个方面，圆满完成年度学习计划，思想政治素质与履职能力得到全面提升。</p>
+            
+            <h2>二、主要学习内容与进展</h2>
+            
+            <h3>1. 理论学习</h3>
+            <p>深入学习习近平新时代中国特色社会主义思想，系统研读《习近平谈治国理政》第四卷、《党章》及二十届历次全会精神。通过集中学习研讨、专题党课和自学等形式，进一步增强了政治理论水平和理论自觉，坚定了理想信念。</p>
+            
+            <h3>2. 党性教育</h3>
+            <p>参加党性教育培训班，重温入党誓词，参观红色教育基地，学习革命先辈先进事迹。通过专题学习《中国共产党纪律处分条例》《党员权利保障条例》等内容，强化了纪律意识和规矩意识，自觉在思想上、政治上、行动上同党中央保持高度一致。</p>
+            
+            <h3>3. 业务与能力提升</h3>
+            <p>结合岗位实际，参加了业务技能和综合素质培训课程，提升了工作谋划、组织协调和执行能力。在日常工作中积极发挥党员先锋模范作用，带头攻坚克难，推动了工作质量和效率的提升。</p>
+            
+            <h3>4. 群众服务与社会实践</h3>
+            <p>积极参与志愿服务和社区共建活动，累计服务时长超过60小时。深入基层调研，了解群众需求，协助解决实际困难，用实际行动践行“全心全意为人民服务”的宗旨。</p>
+            
+            <h2>三、学习成果与收获</h2>
+            <p>通过一年的系统学习，政治理论素养明显提高，理想信念更加坚定，党性修养不断增强。在实际工作中，能够自觉以党员标准严格要求自己，做到思想上有方向、工作上有方法、行动上有表率。同时，增强了服务意识和群众观念，在团队中发挥了示范带动作用。</p>
+            
+            <h2>四、存在不足与改进方向</h2>
+            <p>一年来虽取得一定成绩，但也存在不足：理论学习的系统性和深度有待加强，学习与实际工作的结合还不够紧密；在带动他人学习方面，主动性有待提升。</p>
+            <p>针对以上问题，下一步将进一步加强学习自觉性，深化理论联系实际的能力，提升政治敏锐性和政治鉴别力，努力成为学习型、服务型、创新型党员。</p>
+            
+            <h2>五、下一年度学习计划</h2>
+            <p>下一年度计划重点学习和实践以下内容：</p>
+            <ul>
+                <li>持续深入学习习近平新时代中国特色社会主义思想和党的最新理论成果</li>
+                <li>强化党章党规、纪律作风和廉政教育学习</li>
+                <li>结合岗位实践开展专题调研，推动理论成果转化为工作实效</li>
+                <li>积极参与支部主题党日和志愿服务活动，发挥党员先锋模范作用</li>
+                <li>完善个人学习档案，做好年度学习记录与总结</li>
+            </ul>
+            <p>计划全年累计学习时长达到1500小时，撰写3篇心得体会或学习交流文章，参与不少于4次支部主题实践活动。</p>
+            </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <!-- <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center text-gray-500 text-sm">
+        <p>© 2023 报告管理系统 版权所有</p>
+      </div>
+    </div>
+  </footer> -->
+
+  <!-- 新增报告弹窗 (默认隐藏) -->
+  <div id="add-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg w-full mx-4 animate-fadeIn" style="width: 800px !important;">
+      <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+        <h3 class="text-lg font-semibold">新增报告</h3>
+        <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="p-5">
+        <form id="add-report-form" class="space-y-4">
+          <!-- 报告名称 -->
+          <div>
+            <label for="report-name" class="block text-sm font-medium text-gray-700 mb-1">报告名称 <span class="text-red-500">*</span></label>
+            <input type="text" id="report-name" placeholder="请输入报告名称" 
+                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom">
+          </div>
+          
+          <!-- 模板选择 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">选择模板 <span class="text-red-500">*</span></label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-custom">
+                <input type="radio" name="template" id="template-personal" value="personal" class="hidden peer" checked>
+                <label for="template-personal" class="cursor-pointer block">
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium">个人学习报告</span>
+                    <i class="fa fa-check-circle text-primary opacity-0 peer-checked:opacity-100 transition-custom"></i>
+                  </div>
+                </label>
+              </div>
+              
+              <div class="border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-custom">
+                <input type="radio" name="template" id="template-team" value="team" class="hidden peer">
+                <label for="template-team" class="cursor-pointer block">
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium">团队学习报告</span>
+                    <i class="fa fa-check-circle text-primary opacity-0 peer-checked:opacity-100 transition-custom"></i>
+                  </div>
+                </label>
+              </div>
+              
+              <div class="border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-custom">
+                <input type="radio" name="template" id="template-course" value="course" class="hidden peer">
+                <label for="template-course" class="cursor-pointer block">
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium">课程学习报告</span>
+                    <i class="fa fa-check-circle text-primary opacity-0 peer-checked:opacity-100 transition-custom"></i>
+                  </div>
+                </label>
+              </div>
+              
+              <div class="border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-custom">
+                <input type="radio" name="template" id="template-project" value="project" class="hidden peer">
+                <label for="template-project" class="cursor-pointer block">
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium">项目学习报告</span>
+                    <i class="fa fa-check-circle text-primary opacity-0 peer-checked:opacity-100 transition-custom"></i>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 数据时间范围 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="data-start-date" class="block text-sm font-medium text-gray-700 mb-1">开始日期 <span class="text-red-500">*</span></label>
+              <input type="date" id="data-start-date" 
+                     class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom">
+            </div>
+            <div>
+              <label for="data-end-date" class="block text-sm font-medium text-gray-700 mb-1">结束日期 <span class="text-red-500">*</span></label>
+              <input type="date" id="data-end-date" 
+                     class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom">
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <div class="p-4 border-t border-gray-200 flex justify-end gap-3">
+        <button id="cancel-add" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-custom">取消</button>
+        <button id="confirm-add" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-custom">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 下载成功提示 -->
+  <div id="download-toast" class="fixed bottom-6 right-6 bg-green-500 text-white px-4 py-3 rounded-md shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2 z-50">
+    <i class="fa fa-check-circle"></i>
+    <span>报告下载成功</span>
+  </div>
+
+  <script>
+    // 获取DOM元素
+    const listSection = document.getElementById('list-section');
+    const previewSection = document.getElementById('preview-section');
+    const addModal = document.getElementById('add-modal');
+    const downloadToast = document.getElementById('download-toast');
+    
+    const addBtn = document.getElementById('add-btn');
+    const closeModal = document.getElementById('close-modal');
+    const cancelAdd = document.getElementById('cancel-add');
+    const confirmAdd = document.getElementById('confirm-add');
+    const backToList = document.getElementById('back-to-list');
+    const downloadReport = document.getElementById('download-report');
+    const resetBtn = document.getElementById('reset-btn');
+    const queryBtn = document.getElementById('query-btn');
+    const searchInput = document.getElementById('search');
+    
+    const previewTitle = document.getElementById('preview-title');
+    const previewDateRange = document.getElementById('preview-date-range');
+    const previewGeneratedDate = document.getElementById('preview-generated-date');
+    
+    // 查看报告链接
+    const viewReportLinks = document.querySelectorAll('.view-report');
+    
+    // 打开新增报告弹窗
+    addBtn.addEventListener('click', function() {
+      addModal.classList.remove('hidden');
+      // 设置默认日期范围为当前年度
+      const today = new Date();
+      const year = today.getFullYear();
+      document.getElementById('data-start-date').value = `${year}-01-01`;
+      document.getElementById('data-end-date').value = today.toISOString().split('T')[0];
+    });
+    
+    // 关闭新增报告弹窗
+    function closeAddModal() {
+      addModal.classList.add('hidden');
+    }
+    
+    closeModal.addEventListener('click', closeAddModal);
+    cancelAdd.addEventListener('click', closeAddModal);
+    
+    // 点击弹窗外部关闭
+    addModal.addEventListener('click', function(e) {
+      if (e.target === addModal) {
+        closeAddModal();
+      }
+    });
+    
+    // 确认新增报告，跳转到预览页面
+    confirmAdd.addEventListener('click', function() {
+      const reportName = document.getElementById('report-name').value;
+      const startDate = document.getElementById('data-start-date').value;
+      const endDate = document.getElementById('data-end-date').value;
+      
+      // 简单验证
+      if (!reportName || !startDate || !endDate) {
+        alert('请填写所有必填字段');
+        return;
+      }
+      
+      // 格式化日期显示
+      const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+      };
+      
+      // 更新预览页面内容
+      previewTitle.textContent = reportName;
+      previewDateRange.textContent = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+      
+      // 设置生成日期为当前日期
+      const today = new Date();
+      previewGeneratedDate.textContent = today.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+      
+      // 关闭弹窗，切换到预览页面
+      closeAddModal();
+      listSection.classList.add('hidden');
+      previewSection.classList.remove('hidden');
+    });
+    
+    // 返回列表页面
+    backToList.addEventListener('click', function() {
+      previewSection.classList.add('hidden');
+      listSection.classList.remove('hidden');
+    });
+    
+    // 查看报告
+    viewReportLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const reportId = this.getAttribute('data-id');
+        
+        // 根据报告ID设置不同的预览内容
+        switch(reportId) {
+          case '1':
+            previewTitle.textContent = '2023年度学习总结报告';
+            previewDateRange.textContent = '2023年1月1日 - 2023年12月31日';
+            break;
+          case '2':
+            previewTitle.textContent = '前端技能提升报告';
+            previewDateRange.textContent = '2023年9月1日 - 2023年11月15日';
+            break;
+          case '3':
+            previewTitle.textContent = '年度学习计划报告';
+            previewDateRange.textContent = '2023年10月1日 - 2024年9月30日';
+            break;
+          case '4':
+            previewTitle.textContent = '数据结构学习总结';
+            previewDateRange.textContent = '2023年7月1日 - 2023年9月15日';
+            break;
+        }
+        
+        // 设置生成日期为当前日期
+        const today = new Date();
+        previewGeneratedDate.textContent = today.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+        
+        // 切换到预览页面
+        listSection.classList.add('hidden');
+        previewSection.classList.remove('hidden');
+      });
+    });
+    
+    // 下载报告
+    downloadReport.addEventListener('click', function() {
+      // 模拟下载过程
+      this.innerHTML = '<i class="fa fa-spinner fa-spin"></i><span>正在下载...</span>';
+      this.disabled = true;
+      
+      setTimeout(() => {
+        // 恢复按钮状态
+        this.innerHTML = '<i class="fa fa-download"></i><span>下载报告</span>';
+        this.disabled = false;
+        
+        // 显示下载成功提示
+        downloadToast.classList.remove('translate-y-20', 'opacity-0');
+        
+        // 3秒后隐藏提示
+        setTimeout(() => {
+          downloadToast.classList.add('translate-y-20', 'opacity-0');
+        }, 3000);
+      }, 1500);
+    });
+    
+    // 搜索功能
+    queryBtn.addEventListener('click', function() {
+      const searchText = searchInput.value.trim();
+      if (searchText) {
+        alert(`搜索报告: ${searchText}`);
+        // 实际应用中这里会发起搜索请求
+      } else {
+        alert('请输入搜索内容');
+      }
+    });
+    
+    // 重置搜索
+    resetBtn.addEventListener('click', function() {
+      searchInput.value = '';
+    });
+    
+    // 按Enter键搜索
+    searchInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        queryBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>

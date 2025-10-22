@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>讲师分配页面</title>
+    <style>
+        :root {
+            --theme-color: #d82525;
+            --light-gray: #f5f7fa;
+            --gray: #e4e7ed;
+            --dark-gray: #c0c4cc;
+            --text-primary: #303133;
+            --text-secondary: #606266;
+            --border-color: #dcdcdc;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #fff;
+            color: var(--text-primary);
+        }
+        .header-preview {
+            background-color: var(--light-gray);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px;
+        }
+        .preview-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .preview-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        .confirm-btn {
+            background-color: var(--theme-color);
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+        }
+        .search-filter {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: 10px;
+            gap: 15px;
+        }
+        .search-filter label {
+            font-size: 14px;
+            margin-right: 5px;
+        }
+        .search-filter input,
+        .search-filter select {
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .search-btn {
+            background-color: #d82525;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .recommend-btn {
+            background-color: #d82525;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .reset-btn {
+            background-color: #fff;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .table-container {
+            margin: 10px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th,
+        table td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        table th {
+            background-color: #efefef;
+            color: #000;
+        }
+        table td {
+            background-color: #fff;
+        }
+        .status {
+            background-color: #d82525;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .assign-btn {
+            background-color: var(--theme-color);
+            color: #fff;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .detail-btn {
+            background-color: #fff;
+            color: #d82525;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .batch-ops {
+            display: flex;
+            justify-content: flex-end;
+            margin: 10px;
+            gap: 10px;
+        }
+        .batch-btn {
+            background-color: #d82525;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .export-btn {
+            background-color: #fff;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .task-queue-btn {
+            background-color: #d82525;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .save-scheme-btn {
+            background-color: #d82525;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .record-info {
+            margin: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-preview">
+        <div class="preview-title">当前分配预览</div>
+        <div class="preview-info">
+            <div>课程名称：党政干部培训课程</div>
+            <div>匹配讲师数：8人</div>
+            <div>推荐讲师：程超杰、汪建龙</div>
+            <div>分配时间：2025-07-10 09:00</div>
+            <button class="confirm-btn">确认分配方案</button>
+        </div>
+    </div>
+
+    <div class="search-filter">
+        <div>
+            <label for="courseName">课程名称：</label>
+            <input type="text" id="courseName" placeholder="输入课程名称">
+        </div>
+        <div>
+            <label for="lecturerType">讲师类型：</label>
+            <select id="lecturerType">
+                <option value="all">全部</option>
+                <option value="internal">内部讲师</option>
+                <option value="external">外部讲师</option>
+            </select>
+        </div>
+        <div>
+            <label for="status">状态：</label>
+            <select id="status">
+                <option value="all">全部</option>
+                <option value="enabled">启用</option>
+                <option value="disabled">禁用</option>
+            </select>
+        </div>
+        <div>
+            <label for="lecturerLevel">讲师级别：</label>
+            <select id="lecturerLevel">
+                <option value="all">全部</option>
+                <option value="tutor">授课导师</option>
+                <option value="basic">基础等级</option>
+                <option value="backbone">骨干等级</option>
+            </select>
+        </div>
+        <button class="search-btn">查询</button>
+        <button class="recommend-btn">智能推荐</button>
+        <button class="reset-btn">重置</button>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th><input type="checkbox"></th>
+                    <th>序号</th>
+                    <th>讲师名称</th>
+                    <th>账号</th>
+                    <th>讲师类型</th>
+                    <th>共题讲解</th>
+                    <th>最近授课时间</th>
+                    <th>状态</th>
+                    <th>授课总数</th>
+                    <th>讲师满意度</th>
+                    <th>讲师级别</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="checkbox" checked></td>
+                    <td>1</td>
+                    <td>胡晓霞</td>
+                    <td>zhqaa@nih</td>
+                    <td>内部讲师</td>
+                    <td>否</td>
+                    <td>--</td>
+                    <td><span class="status">启用</span></td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>授课导师</td>
+                    <td>
+                        <button class="assign-btn">分配</button>
+                        <button class="detail-btn">详情</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" checked></td>
+                    <td>2</td>
+                    <td>程超杰</td>
+                    <td>njbxzj</td>
+                    <td>内部讲师</td>
+                    <td>是</td>
+                    <td>2025-07-05 14:00</td>
+                    <td><span class="status">启用</span></td>
+                    <td>1</td>
+                    <td>100.00</td>
+                    <td>基础等级</td>
+                    <td>
+                        <button class="assign-btn">分配</button>
+                        <button class="detail-btn">详情</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>3</td>
+                    <td>汪建龙</td>
+                    <td>970603702</td>
+                    <td>内部讲师</td>
+                    <td>否</td>
+                    <td>2025-07-06 10:00</td>
+                    <td><span class="status">启用</span></td>
+                    <td>1</td>
+                    <td>100.00</td>
+                    <td>骨干等级</td>
+                    <td>
+                        <button class="assign-btn">分配</button>
+                        <button class="detail-btn">详情</button>
+                    </td>
+                </tr>
+                <!-- 可根据需要继续添加行 -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="batch-ops">
+        <div class="record-info">共 10 条记录，已选择 2 条</div>
+        <button class="batch-btn">批量分配</button>
+        <button class="export-btn">导出</button>
+        <button class="task-queue-btn">查看任务队列</button>
+        <button class="save-scheme-btn">保存分配方案</button>
+    </div>
+</body>
+</html>

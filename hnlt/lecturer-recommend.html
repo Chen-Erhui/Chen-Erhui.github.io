@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>师资推荐</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Microsoft YaHei", "Heiti SC", sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 90%;
+            margin: 0 auto;
+            padding: 30px 20px;
+            box-sizing: border-box;
+        }
+        .header {
+            background-color: #c91f37;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: normal;
+        }
+        .tag-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .filter-tag {
+            padding: 8px 20px;
+            background-color: white;
+            border: 2px solid #c91f37;
+            color: #c91f37;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+        .filter-tag.active {
+            background-color: #c91f37;
+            color: white;
+        }
+        .filter-tag:hover {
+            background-color: #fde0e5;
+        }
+        .content {
+            display: flex;
+            gap: 30px;
+        }
+        .left-column {
+            flex: 3; /* 加宽左侧区域 */
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        .instructors-title {
+            color: #c91f37;
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #fde0e3;
+        }
+        .instructor-item {
+            display: flex;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .instructor-item:hover {
+            background-color: #fdf7f8;
+        }
+        .instructor-item:last-child {
+            border-bottom: none;
+        }
+        .instructor-item.active {
+            background-color: #fef0f2;
+        }
+        .avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 25px;
+            border: 3px solid #ffeeee;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .instructor-info {
+            padding: 0 10px;
+            flex: 1;
+        }
+        .instructor-info h3 {
+            margin: 0 0 5px 0;
+            color: #333;
+            font-size: 19px;
+        }
+        .instructor-level {
+            color: #c91f37;
+            margin: 0 0 8px 0;
+            font-weight: normal;
+            font-size: 16px;
+        }
+        .instructor-bio {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .instructor-courses {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #888;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .collect-btn {
+            background-color: #fff0f2;
+            color: #c91f37;
+            border: 1px solid #c91f37;
+        }
+        .collect-btn.active {
+            background-color: #c91f37;
+            color: white;
+        }
+        .dislike-btn {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+        .dislike-btn:hover {
+            background-color: #eaeaea;
+        }
+        .right-column {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        .related-courses-title {
+            color: #c91f37;
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #fde0e3;
+        }
+        .course-item {
+            display: flex;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f5f5f5;
+            text-decoration: none;
+            color: #333;
+            transition: transform 0.3s;
+        }
+        .course-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .course-item:hover {
+            transform: translateY(-3px);
+        }
+        .course-cover {
+            width: 100px;
+            height: 70px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .course-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .course-intro {
+            flex: 1;
+        }
+        .course-intro h4 {
+            margin: 0 0 8px 0;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+        .course-intro p {
+            margin: 0;
+            font-size: 13px;
+            color: #666;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.5;
+        }
+        .course-meta {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #c91f37;
+            display: flex;
+            gap: 10px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #eee;
+        }
+        /* 分页组件样式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 8px;
+        }
+        .pagination-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .pagination-btn:hover {
+            border-color: #e60012;
+            color: #e60012;
+        }
+        .pagination-btn.active {
+            background-color: #e60012;
+            color: white;
+            border-color: #e60012;
+        }
+        .pagination-btn.prev-next {
+            width: auto;
+            padding: 0 12px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>师资推荐</h1>
+        </div>
+        
+        <div class="tag-filter">
+            <div class="filter-tag active" data-level="all">全部讲师</div>
+            <div class="filter-tag" data-level="provincial">省级讲师</div>
+            <div class="filter-tag" data-level="municipal">市级讲师</div>
+            <div class="filter-tag" data-level="local">地方讲师</div>
+        </div>
+        
+        <div class="content">
+            <div class="left-column">
+                <h2 class="instructors-title">讲师团队</h2>
+                
+                <!-- 省级讲师 -->
+                <div class="instructor-item active" data-level="provincial" data-id="1">
+                    <div class="avatar">
+                        <img src="https://picsum.photos/id/1005/200/200" alt="张明">
+                    </div>
+                    <div class="instructor-info">
+                        <h3>张明</h3>
+                        <p class="instructor-level">省级党员教育讲师</p>
+                        <p class="instructor-bio">中共党员，省委党校教授，从事党的理论研究20余年，擅长习近平新时代中国特色社会主义思想、党史党建等课程教学。</p>
+                        <p class="instructor-courses">主讲课程：5门</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn collect-btn"><i class="fas fa-star"></i> 收藏</button>
+                        <button class="action-btn dislike-btn"><i class="fas fa-times"></i> 不感兴趣</button>
+                    </div>
+                </div>
+                
+                <!-- 省级讲师 -->
+                <div class="instructor-item" data-level="provincial" data-id="2">
+                    <div class="avatar">
+                        <img src="https://picsum.photos/id/1011/200/200" alt="李华">
+                    </div>
+                    <div class="instructor-info">
+                        <h3>李华</h3>
+                        <p class="instructor-level">省级党员教育讲师</p>
+                        <p class="instructor-bio">中共党员，省社会科学院研究员，专注于党的历史与党的建设研究，曾参与多项省级党建课题研究，教学经验丰富。</p>
+                        <p class="instructor-courses">主讲课程：4门</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn collect-btn"><i class="fas fa-star"></i> 收藏</button>
+                        <button class="action-btn dislike-btn"><i class="fas fa-times"></i> 不感兴趣</button>
+                    </div>
+                </div>
+                
+                <!-- 市级讲师 -->
+                <div class="instructor-item" data-level="municipal" data-id="3">
+                    <div class="avatar">
+                        <img src="https://picsum.photos/id/1012/200/200" alt="王红">
+                    </div>
+                    <div class="instructor-info">
+                        <h3>王红</h3>
+                        <p class="instructor-level">市级党员教育讲师</p>
+                        <p class="instructor-bio">中共党员，市委党校党史教研室主任，长期从事地方党史研究与教学工作，对地方党组织发展历史有深入研究。</p>
+                        <p class="instructor-courses">主讲课程：6门</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn collect-btn"><i class="fas fa-star"></i> 收藏</button>
+                        <button class="action-btn dislike-btn"><i class="fas fa-times"></i> 不感兴趣</button>
+                    </div>
+                </div>
+                
+                <!-- 市级讲师 -->
+                <div class="instructor-item" data-level="municipal" data-id="4">
+                    <div class="avatar">
+                        <img src="https://picsum.photos/id/1025/200/200" alt="赵强">
+                    </div>
+                    <div class="instructor-info">
+                        <h3>赵强</h3>
+                        <p class="instructor-level">市级党员教育讲师</p>
+                        <p class="instructor-bio">中共党员，市纪委监委党风政风监督室主任，擅长党风廉政建设、纪律作风建设等方面的教学与研究。</p>
+                        <p class="instructor-courses">主讲课程：3门</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn collect-btn"><i class="fas fa-star"></i> 收藏</button>
+                        <button class="action-btn dislike-btn"><i class="fas fa-times"></i> 不感兴趣</button>
+                    </div>
+                </div>
+                
+                <!-- 地方讲师 -->
+                <div class="instructor-item" data-level="local" data-id="5">
+                    <div class="avatar">
+                        <img src="https://picsum.photos/id/1027/200/200" alt="陈静">
+                    </div>
+                    <div class="instructor-info">
+                        <h3>陈静</h3>
+                        <p class="instructor-level">地方党员教育讲师</p>
+                        <p class="instructor-bio">中共党员，基层党委书记，拥有丰富的基层党建工作经验，擅长基层党组织建设、党员管理等实务教学。</p>
+                        <p class="instructor-courses">主讲课程：4门</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn collect-btn"><i class="fas fa-star"></i> 收藏</button>
+                        <button class="action-btn dislike-btn"><i class="fas fa-times"></i> 不感兴趣</button>
+                    </div>
+                </div>
+                
+                <!-- 地方讲师 -->
+                <div class="instructor-item" data-level="local" data-id="6">
+                    <div class="avatar">
+                        <img src="https://picsum.photos/id/1074/200/200" alt="刘强">
+                    </div>
+                    <div class="instructor-info">
+                        <h3>刘强</h3>
+                        <p class="instructor-level">地方党员教育讲师</p>
+                        <p class="instructor-bio">中共党员，村党支部书记，全国优秀党务工作者，擅长乡村振兴、农村党建等实践教学。</p>
+                        <p class="instructor-courses">主讲课程：3门</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn collect-btn"><i class="fas fa-star"></i> 收藏</button>
+                        <button class="action-btn dislike-btn"><i class="fas fa-times"></i> 不感兴趣</button>
+                    </div>
+                </div>
+                <!-- 分页组件 -->
+                <div class="pagination">
+                    <button class="pagination-btn prev-next">上一页</button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">4</button>
+                    <button class="pagination-btn">5</button>
+                    <button class="pagination-btn prev-next">下一页</button>
+                </div>
+            </div>
+            
+            <div class="right-column">
+                <h3 class="related-courses-title">推荐课程</h3>
+                <div class="courses-container">
+                    <div class="empty-state">
+                        <i class="fas fa-book-open"></i>
+                        <p>请选择一位讲师查看相关课程</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 课程数据 - 按讲师ID分类
+        const coursesData = {
+            1: [
+                {
+                    id: 101,
+                    title: "习近平新时代中国特色社会主义思想解读",
+                    desc: "深入解读习近平新时代中国特色社会主义思想的核心要义和实践要求",
+                    cover: "https://picsum.photos/id/20/300/200",
+                    duration: "6课时",
+                    level: "初级到高级"
+                },
+                {
+                    id: 102,
+                    title: "中国共产党百年奋斗历程与经验启示",
+                    desc: "回顾中国共产党百年奋斗历程，总结党的建设和发展的宝贵经验",
+                    cover: "https://picsum.photos/id/21/300/200",
+                    duration: "4课时",
+                    level: "全级别"
+                },
+                {
+                    id: 103,
+                    title: "新时代党的建设总要求",
+                    desc: "解读新时代党的建设总要求，探讨全面从严治党的实践路径",
+                    cover: "https://picsum.photos/id/22/300/200",
+                    duration: "3课时",
+                    level: "中级"
+                }
+            ],
+            2: [
+                {
+                    id: 201,
+                    title: "党史学习教育专题讲座",
+                    desc: "系统学习党的历史，深刻理解中国共产党为什么能",
+                    cover: "https://picsum.photos/id/23/300/200",
+                    duration: "5课时",
+                    level: "初级"
+                },
+                {
+                    id: 202,
+                    title: "马克思主义基本原理与当代价值",
+                    desc: "学习马克思主义基本原理，探讨其在当代中国的实践价值",
+                    cover: "https://picsum.photos/id/24/300/200",
+                    duration: "4课时",
+                    level: "中级"
+                }
+            ],
+            3: [
+                {
+                    id: 301,
+                    title: "地方党组织发展史研究",
+                    desc: "梳理地方党组织发展历程，总结地方党建工作的特色与经验",
+                    cover: "https://picsum.photos/id/25/300/200",
+                    duration: "4课时",
+                    level: "中级"
+                },
+                {
+                    id: 302,
+                    title: "新时代基层党建创新实践",
+                    desc: "介绍基层党建工作的创新做法和成功案例",
+                    cover: "https://picsum.photos/id/26/300/200",
+                    duration: "3课时",
+                    level: "初级到中级"
+                }
+            ],
+            4: [
+                {
+                    id: 401,
+                    title: "党风廉政建设与反腐败斗争",
+                    desc: "分析当前党风廉政建设形势，探讨反腐败斗争的有效途径",
+                    cover: "https://picsum.photos/id/27/300/200",
+                    duration: "3课时",
+                    level: "全级别"
+                },
+                {
+                    id: 402,
+                    title: "中国共产党纪律处分条例解读",
+                    desc: "详细解读《中国共产党纪律处分条例》，增强党员纪律意识",
+                    cover: "https://picsum.photos/id/28/300/200",
+                    duration: "2课时",
+                    level: "初级"
+                }
+            ],
+            5: [
+                {
+                    id: 501,
+                    title: "基层党组织建设实务",
+                    desc: "讲解基层党组织设置、换届选举、党员发展等实务工作",
+                    cover: "https://picsum.photos/id/29/300/200",
+                    duration: "4课时",
+                    level: "初级"
+                },
+                {
+                    id: 502,
+                    title: "党员教育管理工作方法",
+                    desc: "介绍党员教育管理的有效方法和创新思路",
+                    cover: "https://picsum.photos/id/30/300/200",
+                    duration: "3课时",
+                    level: "初级到中级"
+                }
+            ],
+            6: [
+                {
+                    id: 601,
+                    title: "乡村振兴战略与农村党建",
+                    desc: "探讨乡村振兴战略背景下农村党建工作的新任务新要求",
+                    cover: "https://picsum.photos/id/31/300/200",
+                    duration: "3课时",
+                    level: "全级别"
+                },
+                {
+                    id: 602,
+                    title: "农村党员先锋模范作用发挥",
+                    desc: "如何引导农村党员在乡村治理、产业发展中发挥先锋模范作用",
+                    cover: "https://picsum.photos/id/32/300/200",
+                    duration: "2课时",
+                    level: "初级"
+                }
+            ]
+        };
+
+        // 筛选标签点击事件
+        const filterTags = document.querySelectorAll('.filter-tag');
+        const instructorItems = document.querySelectorAll('.instructor-item');
+        
+        filterTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                // 移除所有标签的active类
+                filterTags.forEach(t => t.classList.remove('active'));
+                // 给当前点击的标签添加active类
+                tag.classList.add('active');
+                
+                const level = tag.getAttribute('data-level');
+                
+                // 筛选讲师
+                instructorItems.forEach(item => {
+                    if (level === 'all' || item.getAttribute('data-level') === level) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // 讲师点击事件 - 显示对应课程
+        const coursesContainer = document.querySelector('.courses-container');
+        
+        instructorItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                // 防止点击按钮时触发讲师选择
+                if (e.target.closest('.action-btn')) return;
+                
+                // 移除所有讲师的active类
+                instructorItems.forEach(i => i.classList.remove('active'));
+                // 给当前点击的讲师添加active类
+                item.classList.add('active');
+                
+                const instructorId = item.getAttribute('data-id');
+                const courses = coursesData[instructorId];
+                
+                // 清空课程容器
+                coursesContainer.innerHTML = '';
+                
+                // 添加课程
+                courses.forEach(course => {
+                    const courseElement = document.createElement('a');
+                    courseElement.href = '#';
+                    courseElement.className = 'course-item';
+                    courseElement.innerHTML = `
+                        <div class="course-cover">
+                            <img src="${course.cover}" alt="${course.title}">
+                        </div>
+                        <div class="course-intro">
+                            <h4>${course.title}</h4>
+                            <p>${course.desc}</p>
+                            <div class="course-meta">
+                                <span>${course.duration}</span>
+                                <span>${course.level}</span>
+                            </div>
+                        </div>
+                    `;
+                    coursesContainer.appendChild(courseElement);
+                });
+            });
+        });
+
+        // 收藏按钮点击事件
+        const collectButtons = document.querySelectorAll('.collect-btn');
+        
+        collectButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation(); // 阻止事件冒泡
+                button.classList.toggle('active');
+                
+                if (button.classList.contains('active')) {
+                    button.innerHTML = '<i class="fas fa-star"></i> 已收藏';
+                } else {
+                    button.innerHTML = '<i class="fas fa-star"></i> 收藏';
+                }
+            });
+        });
+
+        // 不感兴趣按钮点击事件
+        const dislikeButtons = document.querySelectorAll('.dislike-btn');
+        
+        dislikeButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation(); // 阻止事件冒泡
+                const instructorItem = button.closest('.instructor-item');
+                instructorItem.style.display = 'none';
+            });
+        });
+        // 默认选中第一个讲师
+        const first = coursesData[1];
+        // 清空课程容器
+        coursesContainer.innerHTML = '';
+        
+        // 添加课程
+        first.forEach(course => {
+            const courseElement = document.createElement('a');
+            courseElement.href = '#';
+            courseElement.className = 'course-item';
+            courseElement.innerHTML = `
+                <div class="course-cover">
+                    <img src="${course.cover}" alt="${course.title}">
+                </div>
+                <div class="course-intro">
+                    <h4>${course.title}</h4>
+                    <p>${course.desc}</p>
+                    <div class="course-meta">
+                        <span>${course.duration}</span>
+                        <span>${course.level}</span>
+                    </div>
+                </div>
+            `;
+            coursesContainer.appendChild(courseElement);
+        });
+        
+    </script>
+</body>
+</html>

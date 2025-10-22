@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>讲师调度系统</title>
+    <style>
+        body {
+            font-family: "Microsoft Yahei", sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .search-bar {
+            background-color: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .search-item {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        select, input {
+            padding: 8px;
+            border: 1px solid #dedede;
+            border-radius: 4px;
+            width: 200px;
+        }
+        .button-group {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+            align-self: flex-end;
+        }
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .reset-btn {
+            background-color: #d82525;
+            color: white;
+        }
+        .query-btn {
+            background-color: #d82525;
+            color: #fff;
+        }
+        .content {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .list, .preview {
+            background-color: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+            flex: 1;
+        }
+        .list h3, .preview h3 {
+            margin-top: 0;
+            color: #d82525;
+        }
+        .lecturer-item {
+            background-color: #fff;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .lecturer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #d82525;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .lecturer-info {
+            flex: 1;
+        }
+        .lecturer-name {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .lecturer-desc {
+            font-size: 14px;
+            color: #666;
+        }
+        .lecturer-buttons button {
+            margin-left: 5px;
+        }
+        .detail-btn {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+        .schedule-btn {
+            background-color: #d82525;
+            color: white;
+        }
+        .preview-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            background-color: #fff;
+            border-radius: 4px;
+            padding: 20px;
+        }
+        .preview-content img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+        }
+        .preview-content p {
+            text-align: center;
+            color: #666;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background-color: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d82525;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-bar">
+        <div class="search-item">
+            <label>目标区域</label>
+            <select>
+                <option>全部区域</option>
+                <option>北京</option>
+                <option>上海</option>
+                <option>广州</option>
+                <option>成都</option>
+            </select>
+        </div>
+        <div class="search-item">
+            <label>课程类型</label>
+            <select>
+                <option>全部类型</option>
+                <option>技术培训</option>
+                <option>管理课程</option>
+                <option>专业技能</option>
+                <option>职业发展</option>
+            </select>
+        </div>
+        <div class="search-item">
+            <label>授课时间</label>
+            <input type="date" value="2025-07-10">
+        </div>
+        <div class="search-item">
+            <label>讲师类型</label>
+            <select>
+                <option>全部类型</option>
+                <option>教授</option>
+                <option>老师</option>
+                <option>导师</option>
+                <option>讲师</option>
+            </select>
+        </div>
+        <div class="button-group">
+            <button class="reset-btn">重置</button>
+            <button class="query-btn">查询可用讲师</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="list">
+            <h3>可用讲师列表</h3>
+            <div class="lecturer-item">
+                <div class="lecturer-avatar">张</div>
+                <div class="lecturer-info">
+                    <div class="lecturer-name">张明教授</div>
+                    <div class="lecturer-desc">技术培训专家 | 北京 | 满意度: 98%</div>
+                </div>
+                <div class="lecturer-buttons">
+                    <button class="detail-btn">详情</button>
+                    <button class="schedule-btn">调度</button>
+                </div>
+            </div>
+            <div class="lecturer-item">
+                <div class="lecturer-avatar">李</div>
+                <div class="lecturer-info">
+                    <div class="lecturer-name">李华老师</div>
+                    <div class="lecturer-desc">管理课程讲师 | 上海 | 满意度: 96%</div>
+                </div>
+                <div class="lecturer-buttons">
+                    <button class="detail-btn">详情</button>
+                    <button class="schedule-btn">调度</button>
+                </div>
+            </div>
+            <div class="lecturer-item">
+                <div class="lecturer-avatar">王</div>
+                <div class="lecturer-info">
+                    <div class="lecturer-name">王强导师</div>
+                    <div class="lecturer-desc">专业技能培训 | 广州 | 满意度: 95%</div>
+                </div>
+                <div class="lecturer-buttons">
+                    <button class="detail-btn">详情</button>
+                    <button class="schedule-btn">调度</button>
+                </div>
+            </div>
+            <div class="lecturer-item">
+                <div class="lecturer-avatar">赵</div>
+                <div class="lecturer-info">
+                    <div class="lecturer-name">赵雪讲师</div>
+                    <div class="lecturer-desc">职业发展指导 | 成都 | 满意度: 97%</div>
+                </div>
+                <div class="lecturer-buttons">
+                    <button class="detail-btn">详情</button>
+                    <button class="schedule-btn">调度</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview">
+            <h3>调度预览</h3>
+            <div class="preview-content">
+                <!-- <img src="https://via.placeholder.com/60/bbdefb/42a5f5?Text=📅" alt="日历图标"> -->
+                <p>选择左侧讲师查看调度详情<br>或点击“调度”按钮创建新的跨区域授课安排</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-item">
+            <div class="stat-number">28</div>
+            <div class="stat-label">可用讲师</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">15</div>
+            <div class="stat-label">待调度课程</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">12</div>
+            <div class="stat-label">本周跨区域授课</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">96%</div>
+            <div class="stat-label">调度成功率</div>
+        </div>
+    </div>
+</body>
+</html>

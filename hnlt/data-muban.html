@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>AI报告模板</title>
+    <style>
+        /* 页面整体样式 */
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .search-bar input, .search-bar select {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .search-bar button {
+            padding: 8px 15px;
+            background-color: #c02026;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .search-bar button.reset {
+            background-color: #fff;
+            color: #c02026;
+            border: 1px solid #c02026;
+        }
+
+        /* 操作按钮区域样式 */
+        .action-buttons {
+            margin-bottom: 15px;
+        }
+        .action-buttons button {
+            padding: 8px 15px;
+            background-color: #c02026;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .action-buttons button.batch {
+            background-color: #fff;
+            color: #c02026;
+            border: 1px solid #c02026;
+        }
+
+        /* 表格样式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        td a {
+            color: #c02026;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        /* 分页样式 */
+        .pagination {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .pagination button, .pagination select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .pagination button.active {
+            background-color: #c02026;
+            color: #fff;
+            border-color: #c02026;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            width: 800px;
+            border-radius: 4px;
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .modal-header .close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .form-group label .required {
+            color: #c02026;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-group .select-wrapper {
+            display: flex;
+        }
+        .form-group .select-wrapper select {
+            flex: 1;
+        }
+        .form-group .select-wrapper button {
+            padding: 8px 15px;
+            background-color: #ddd;
+            border: 1px solid #ccc;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+        .form-group .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        .form-group .action-buttons button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-group .action-buttons button.clear {
+            background-color: #c02026;
+            color: #fff;
+        }
+        .form-group .action-buttons button.add {
+            background-color: #c02026;
+            color: #fff;
+        }
+        .form-group .action-buttons button.import {
+            background-color: #c02026;
+            color: #fff;
+        }
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .modal-footer {
+            text-align: right;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        .modal-footer button {
+            padding: 8px 20px;
+            background-color: #c02026;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- 搜索栏 -->
+    <div class="search-bar">
+        <label>模板名称</label>
+        <input type="text" placeholder="请输入...">
+        <label>创建账号</label>
+        <input type="text" placeholder="请输入...">
+        <label>归属部门</label>
+        <div class="select-wrapper">
+            <select placeholder="请选择">
+                <option value="">请选择</option>
+            </select>
+            <button>选择</button>
+        </div>
+        <label>状态</label>
+        <select placeholder="请选择">
+            <option value="">请选择</option>
+            <option value="启用">启用</option>
+            <option value="禁用">禁用</option>
+        </select>
+        <button>查询</button>
+        <button class="reset">重置</button>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="action-buttons">
+        <button id="addBtn">新增</button>
+        <button class="batch">批量操作</button>
+    </div>
+
+    <!-- 数据表格 -->
+    <table>
+        <thead>
+            <tr>
+                <th><input type="checkbox"></th>
+                <th>序号</th>
+                <th>模板名称</th>
+                <th>归属部门</th>
+                <th>状态</th>
+                <th>创建时间</th>
+                <th>创建账号</th>
+                <th>帐号名称</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="checkbox"></td>
+                <td>1</td>
+                <td>个人学习情况报告模板</td>
+                <td>党员教育</td>
+                <td>启用</td>
+                <td>--</td>
+                <td>guanfang</td>
+                <td>官方</td>
+                <td>
+                    <a href="javascript:;" class="editBtn">编辑</a>
+                    <a href="javascript:;">禁用</a>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="checkbox"></td>
+                <td>2</td>
+                <td>组织学习情况报告模板</td>
+                <td>党员教育</td>
+                <td>启用</td>
+                <td>--</td>
+                <td>guanfang</td>
+                <td>官方</td>
+                <td>
+                    <a href="javascript:;" class="editBtn">编辑</a>
+                    <a href="javascript:;">禁用</a>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="checkbox"></td>
+                <td>3</td>
+                <td>培训班报告模板</td>
+                <td>党员教育</td>
+                <td>启用</td>
+                <td>2025-07-24 17:50</td>
+                <td>zhgxadmin</td>
+                <td>超级管理员</td>
+                <td>
+                    <a href="javascript:;" class="editBtn">编辑</a>
+                    <a href="javascript:;">禁用</a>
+                    <a href="javascript:;">删除</a>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="checkbox"></td>
+                <td>4</td>
+                <td>多维考评报告</td>
+                <td>党员教育</td>
+                <td>启用</td>
+                <td>2025-07-22 21:45</td>
+                <td>xiaohong</td>
+                <td>肖洪</td>
+                <td>
+                    <a href="javascript:;" class="editBtn">编辑</a>
+                    <a href="javascript:;">禁用</a>
+                    <a href="javascript:;">删除</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 分页 -->
+    <div class="pagination">
+        <button>上一页</button>
+        <button class="active">1</button>
+        <button>下一页</button>
+        <select>
+            <option>10条/页</option>
+            <option>20条/页</option>
+            <option>50条/页</option>
+        </select>
+    </div>
+
+    <!-- 新增/编辑模态框 -->
+    <div class="modal" id="myModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>新增</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form>
+                <div class="form-group">
+                    <label><span class="required">*</span>归属部门</label>
+                    <div class="select-wrapper">
+                        <select placeholder="请选择">
+                            <option value="">请选择</option>
+                            <option value="党员教育">党员教育</option>
+                        </select>
+                        <button>选择</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><span class="required">*</span>受众对象</label>
+                    <input type="text" placeholder="请选择受众对象" value="郑州党委">
+                </div>
+                <div class="form-group">
+                    <label><span class="required">*</span>使用说明</label>
+                    <textarea placeholder="请输入使用说明" maxlength="60">输出报告模板</textarea>
+                    <div style="text-align: right; font-size: 12px; color: #999;">0 / 60</div>
+                </div>
+                <div class="form-group">
+                    <label><span class="required">*</span>输出格式</label>
+                    <textarea placeholder="请输入输出格式">
+    单位学习成效评估
+    一、单位党员整体学习情况
+    数据来源：https://zhgx.zhixueyun.com/admin/#/external/d65dff86-bf96-11ef-aeb3-00163e16b923
+    二、学时达标
+    （一）党员5 年累计集中培训≥20 天/16， 学时完成率
+    （二）基层党组织书记≥35天/280学时， 每年参加县级  以上党委举办的脱产培训累计⼀般不少于 5 天或 40 学时。
+    （三）党的创新理论教育学时占总学时的 50% 以上
+    （四）党员⼲部学时按照⼲教规划执⾏
+    三、内容供给
+    （一）核⼼课程占⽐
+    （二）课程质量
+    （三）师资队伍
+    四、基础⽀撑
+    （一）主渠道作⽤ ：各级党校（ ⾏政学院） 主渠道作⽤ ~ 集中培训次数
+    （二）规范加强建设： 乡镇（街道） 党校 、现场教学 点 、远程教育站点
+    （三）⽤好各类党员教育培训基地～ 使⽤率
+    （四）⽤好党群服务中⼼～ 活动次数 、参训⼈次
+    五、学习效果
+    （一）结业测试平均分 、优秀率
+    （二）年度“回头看”复测保持率
+    （三）党员对党的创新理论“知晓率-认同率-践⾏率”三段 式测评
+    六、⾏为转化
+    （一）设岗定责 、承诺践诺参与率及兑现率
+    （二）“学习身边榜样”选树⼈数 、典型示范带动效应 （案例+数据）
+    （三）急难险重任务中党员突击队 、志愿服务队参与率
+    七、对⽐不同单位的培训成效
+    八、发现优秀培训经验和做法
+                    </textarea>
+                </div>
+                <div class="modal-footer">
+                    <button>创建</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 获取模态框、关闭按钮、新增按钮、编辑按钮
+        var modal = document.getElementById("myModal");
+        var closeBtn = document.querySelector(".close");
+        var addBtn = document.getElementById("addBtn");
+        var editBtns = document.querySelectorAll(".editBtn");
+
+        // 打开模态框的函数
+        function openModal(title = "新增") {
+            modal.querySelector(".modal-header h2").textContent = title;
+            modal.style.display = "flex";
+        }
+
+        // 关闭模态框的函数
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        // 点击新增按钮打开模态框
+        addBtn.onclick = function() {
+            openModal("新增");
+        }
+
+        // 点击编辑按钮打开模态框（并设置标题为“编辑”）
+        editBtns.forEach(function(btn) {
+            btn.onclick = function() {
+                openModal("编辑");
+            }
+        });
+
+        // 点击关闭按钮关闭模态框
+        closeBtn.onclick = closeModal;
+
+        // 点击模态框外部关闭模态框
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

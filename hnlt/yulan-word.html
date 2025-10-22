@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word文档在线预览</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563eb',
+            secondary: '#64748b',
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .doc-container {
+        min-height: calc(100vh - 16rem);
+      }
+    }
+  </style>
+</head>
+<body class="font-inter bg-gray-50 text-gray-800">
+  <!-- 顶部导航 -->
+  <header class="bg-white shadow-sm">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <i class="fa fa-file-word-o text-primary text-2xl"></i>
+        <h1 class="text-xl font-bold">Word文档在线预览</h1>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button id="refresh-btn" class="text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-refresh mr-1"></i> 刷新
+        </button>
+        <button id="fullscreen-btn" class="text-gray-600 hover:text-primary transition-colors">
+          <i class="fa fa-expand mr-1"></i> 全屏
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 文档链接输入区 -->
+  <section class="bg-white border-b py-6">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <div class="flex flex-col md:flex-row gap-3">
+          <input 
+            type="url" 
+            id="doc-url" 
+            placeholder="输入Word文档的URL地址..." 
+            class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all"
+            value="http://cnooc.zhixueyun.com/hnlt/%E6%99%BA%E6%85%A7%E5%85%9A%E5%BB%BA%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%B9%B3%E5%8F%B0%E5%85%9A%E7%BB%84%E7%BB%87%E7%94%BB%E5%83%8F%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A.docx"
+          >
+          <button id="load-btn" class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg transition-all font-medium whitespace-nowrap">
+            <i class="fa fa-eye mr-2"></i>加载文档
+          </button>
+        </div>
+        <p class="text-sm text-gray-500 mt-2">支持公开可访问的.docx格式文档链接</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 加载状态 -->
+  <div id="loading" class="container mx-auto px-4 py-16 text-center">
+    <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+    <p class="mt-4 text-gray-600">正在加载文档，请稍候...</p>
+  </div>
+
+  <!-- 错误提示 -->
+  <div id="error" class="container mx-auto px-4 py-16 hidden">
+    <div class="max-w-md mx-auto bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+      <i class="fa fa-exclamation-circle text-red-500 text-3xl mb-4"></i>
+      <h3 class="font-medium text-red-800 mb-2">无法加载文档</h3>
+      <p id="error-message" class="text-red-700 text-sm mb-4">请检查文档URL是否正确且可访问</p>
+      <button id="retry-btn" class="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-lg transition-all text-sm">
+        重试
+      </button>
+    </div>
+  </div>
+
+  <!-- 文档预览区 -->
+  <main id="preview-container" class="container mx-auto px-4 py-6 hidden">
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <h2 id="doc-title" class="font-semibold text-lg"></h2>
+        <p id="doc-url-display" class="text-sm text-gray-500 truncate max-w-2xl"></p>
+      </div>
+      <a id="open-in-office" href="#" target="_blank" class="text-primary hover:text-primary/80 text-sm flex items-center">
+        <i class="fa fa-external-link mr-1"></i> 在Office中打开
+      </a>
+    </div>
+    
+    <div class="bg-white shadow-md rounded-lg overflow-hidden doc-container">
+      <iframe 
+        id="doc-preview" 
+        class="w-full h-full min-h-[600px]" 
+        frameborder="0"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-white border-t mt-8 py-6">
+    <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
+      <p>Word文档在线预览器 | 文档预览由Microsoft Office服务提供支持</p>
+    </div>
+  </footer>
+
+  <script>
+    // 获取DOM元素
+    const docUrlInput = document.getElementById('doc-url');
+    const loadBtn = document.getElementById('load-btn');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const retryBtn = document.getElementById('retry-btn');
+    const loading = document.getElementById('loading');
+    const error = document.getElementById('error');
+    const errorMessage = document.getElementById('error-message');
+    const previewContainer = document.getElementById('preview-container');
+    const docPreview = document.getElementById('doc-preview');
+    const docTitle = document.getElementById('doc-title');
+    const docUrlDisplay = document.getElementById('doc-url-display');
+    const openInOffice = document.getElementById('open-in-office');
+    
+    // 加载文档函数
+    function loadDocument(url) {
+      // 验证URL
+      try {
+        new URL(url);
+      } catch (e) {
+        showError('请输入有效的URL地址');
+        return;
+      }
+      
+      // 显示加载状态
+      previewContainer.classList.add('hidden');
+      error.classList.add('hidden');
+      loading.classList.remove('hidden');
+      
+      // 提取文件名作为标题
+      const fileName = url.split('/').pop().split('?')[0];
+      docTitle.textContent = fileName;
+      docUrlDisplay.textContent = url;
+      openInOffice.href = url;
+      
+      // 使用微软的Office预览服务
+      const encodedUrl = encodeURIComponent(url);
+      const previewUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodedUrl}`;
+      
+      // 设置iframe源
+      docPreview.src = previewUrl;
+      
+      // 监听iframe加载状态
+      docPreview.onload = function() {
+        loading.classList.add('hidden');
+        previewContainer.classList.remove('hidden');
+      };
+      
+      // 处理加载错误
+      docPreview.onerror = function() {
+        showError('无法加载该文档，可能是URL无效或文档无法访问');
+      };
+      
+      // 设置超时检查
+      setTimeout(() => {
+        if (!previewContainer.classList.contains('hidden')) return;
+        showError('加载超时，请检查网络连接或文档URL');
+      }, 30000); // 30秒超时
+    }
+    
+    // 显示错误信息
+    function showError(message) {
+      loading.classList.add('hidden');
+      previewContainer.classList.add('hidden');
+      errorMessage.textContent = message;
+      error.classList.remove('hidden');
+    }
+    
+    // 事件监听
+    loadBtn.addEventListener('click', () => {
+      const url = docUrlInput.value.trim();
+      if (url) {
+        loadDocument(url);
+      } else {
+        showError('请输入Word文档的URL地址');
+      }
+    });
+    
+    // 按Enter键加载文档
+    docUrlInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        loadBtn.click();
+      }
+    });
+    
+    // 刷新文档
+    refreshBtn.addEventListener('click', () => {
+      const url = docUrlInput.value.trim();
+      if (url) {
+        loadDocument(url);
+      }
+    });
+    
+    // 重试加载
+    retryBtn.addEventListener('click', () => {
+      const url = docUrlInput.value.trim();
+      if (url) {
+        loadDocument(url);
+      }
+    });
+    
+    // 全屏预览
+    fullscreenBtn.addEventListener('click', () => {
+      if (docPreview.requestFullscreen) {
+        docPreview.requestFullscreen();
+      } else if (docPreview.webkitRequestFullscreen) { /* Safari */
+        docPreview.webkitRequestFullscreen();
+      } else if (docPreview.msRequestFullscreen) { /* IE11 */
+        docPreview.msRequestFullscreen();
+      }
+    });
+    
+    // 页面加载时自动加载示例文档
+    window.addEventListener('load', () => {
+      const sampleUrl = docUrlInput.value.trim();
+      if (sampleUrl) {
+        loadDocument(sampleUrl);
+      }
+    });
+  </script>
+</body>
+</html>

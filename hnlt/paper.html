@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>课程创建 - 静态演示</title>
+<style>
+    :root{
+        --accent:#c9302c;
+        --muted:#f1f1f1;
+        --border:#ddd;
+        --text:#333;
+        --container-width:1200px;
+        --radius:4px;
+        font-family: "Helvetica Neue", Arial, "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
+    }
+    body{background:#fafafa;color:var(--text);margin:0;padding:24px;box-sizing:border-box;}
+    .wrap{max-width:var(--container-width);margin:0 auto;background:#fff;padding:18px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+
+    /* 步骤条 */
+    .steps{display:flex;gap:12px;align-items:center;margin-bottom:22px}
+    .step{flex:1;position:relative;padding:14px 18px;background:var(--muted);color:#999;border-radius:6px}
+    .step.active{background:var(--accent);color:#fff;font-weight:600}
+    .step:before{content:"";position:absolute;right:-18px;top:0;border-top:24px solid transparent;border-bottom:24px solid transparent;border-left:18px solid rgba(0,0,0,.03)}
+    .step.active:before{border-left-color:rgba(255,255,255,.12)}
+
+    /* 表单布局 */
+    .form{display:grid;grid-template-columns:1fr 260px;gap:22px}
+    .panel{padding:10px}
+    .row{display:flex;align-items:center;margin:12px 0}
+    .label{width:120px;color:#666;padding-right:10px;flex-shrink:0}
+    .field{flex:1}
+    input[type="text"], input[type="number"], input[type="date"], select, textarea{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:3px;background:#fff;box-sizing:border-box}
+    textarea{min-height:80px;resize:vertical}
+    .help{color:#999;font-size:13px}
+    .muted-box{border:1px solid #eee;background:#fbfbfb;padding:12px;border-radius:4px;color:#666}
+    .radio-group{display:flex;gap:12px;align-items:center}
+    .small{font-size:13px;color:#999}
+    .notice{color:var(--accent);font-size:13px;margin-top:8px}
+
+    /* 两个并列学时区域 */
+    .two-cols{display:flex;gap:12px}
+    .card{background:#fafafa;border:1px solid #eee;padding:12px;border-radius:4px;flex:1}
+
+    /* 右侧封面 */
+    .cover{display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px}
+    .thumb{width:160px;height:160px;background:linear-gradient(135deg,#eef 0%,#dde 100%);border:2px solid #efefef;border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .thumb img{max-width:100%;max-height:100%;display:block}
+    .upload-btn{display:inline-block;padding:8px 12px;background:var(--accent);color:#fff;border-radius:4px;cursor:pointer}
+    .hint{font-size:13px;color:#c33;text-align:center}
+
+    /* 底部操作 */
+    .footer{display:flex;justify-content:flex-end;gap:12px;margin-top:18px}
+    .btn{padding:10px 18px;border-radius:4px;border:1px solid var(--border);background:#fff;cursor:pointer}
+    .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+    /* 响应式 */
+    @media(max-width:1000px){
+        .form{grid-template-columns:1fr}
+        .label{width:110px}
+    }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div class="steps" role="navigation" aria-label="步骤">
+        <div class="step active">1 基本信息</div>
+        <div class="step">2 活动安排</div>
+        <div class="step">3 人员安排</div>
+        <div class="step">4 规则设置</div>
+    </div>
+
+    <form id="courseForm" class="form" onsubmit="return false">
+        <div class="panel">
+            <!-- 班级名称 -->
+            <div class="row">
+                <div class="label">班级名称 <span style="color:var(--accent)">*</span></div>
+                <div class="field"><input id="title" type="text" placeholder="请输入" required value="演示班级1"></div>
+            </div>
+
+            <!-- 培训模式 -->
+            <div class="row" style="align-items:flex-start">
+                <div class="label">培训模式</div>
+                <div class="field">
+                    <div class="muted-box">
+                        <div class="radio-group">
+                            <label><input type="radio" name="mode" value="fixed" checked> 固定时间模式</label>
+                            <label><input type="radio" name="mode" value="period"> 学习周期模式</label>
+                        </div>
+                        <div id="modeHint" class="small" style="margin-top:8px">固定时间：学员需要在统一的班级时间段内参与学习。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 时间与人数 -->
+            <div class="row">
+                <div class="label">开始时间 <span style="color:var(--accent)">*</span></div>
+                <div class="field"><input id="start" type="date" required value="2025-10-20"></div>
+            </div>
+            <div class="row">
+                <div class="label">结束时间 <span style="color:var(--accent)">*</span></div>
+                <div class="field"><input id="end" type="date" required value="2025-10-25"></div>
+            </div>
+            <div class="row">
+                <div class="label">计划人数</div>
+                <div class="field"><input id="capacity" type="number" min="1" placeholder="请输入" value="50"></div>
+            </div>
+
+            <!-- 项目类型 -->
+            <div class="row">
+                <div class="label">项目类型</div>
+                <div class="field"><input id="ptype" type="text" placeholder="请选择或输入"><div class="small" style="margin-top:6px">示例：党员教育 / 企业培训</div></div>
+            </div>
+
+            <!-- 学分 / 学时 -->
+            <div class="row" style="margin-top:18px">
+                <div class="label">学时</div>
+                <div class="field">
+                    <div class="two-cols">
+                        <div class="card">
+                            <div style="margin-bottom:8px"><label><input type="radio" name="hourMode" value="whole" checked> 整体配置</label> <label style="margin-left:12px"><input type="radio" name="hourMode" value="byRes"> 按资源配置</label></div>
+                            <input id="hours" type="number" min="0" max="10000" placeholder="请输入完成班级将获得的学时，0~10000">
+                        </div>
+                        <div class="card">
+                            <div style="margin-bottom:8px"><label><input type="radio" name="creditMode" value="whole" checked> 整体配置</label> <label style="margin-left:12px"><input type="radio" name="creditMode" value="byRes"> 按资源配置</label></div>
+                            <input id="credits" type="number" min="0" max="10000" placeholder="请输入完成班级将获得的学分，0~10000">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 归属/实施/主办 -->
+            <div class="row">
+                <div class="label">归属部门 <span style="color:var(--accent)">*</span></div>
+                <div class="field"><input id="dept" type="text" placeholder="请输入部门名称" required value="培训部"></div>
+            </div>
+            <div class="row">
+                <div class="label">实施部门 <span style="color:var(--accent)">*</span></div>
+                <div class="field"><input id="impl" type="text" placeholder="请输入实施部门" required value="培训部"></div>
+            </div>
+            <div class="row">
+                <div class="label">主办单位</div>
+                <div class="field"><input id="host" type="text" placeholder="请输入主办单位" value="培训部"></div>
+            </div>
+        </div>
+
+        <aside class="panel cover">
+            <div style="width:100%;display:flex;justify-content:space-between;align-items:center">
+                <strong>班级封面</strong>
+                <span class="small">建议上传1280*720px</span>
+            </div>
+            <div class="thumb" id="thumb">
+                <span class="small">预览</span>
+            </div>
+            <label class="upload-btn" for="coverInput">上传图片</label>
+            <input id="coverInput" type="file" accept="image/*" style="display:none">
+            <div class="hint">图片大小不可超过2MB</div>
+        </aside>
+
+        <div style="grid-column:1 / -1">
+            <div class="footer">
+                <button class="btn" type="button" onclick="saveDraft()">保存</button>
+                <button class="btn primary" type="button" onclick="nextStep()">下一步</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // 简单交互脚本
+    (function(){
+        const modeRadios = document.querySelectorAll('input[name="mode"]');
+        const modeHint = document.getElementById('modeHint');
+        modeRadios.forEach(r=>{
+            r.addEventListener('change', ()=> {
+                if(r.checked){
+                    modeHint.textContent = r.value === 'fixed'
+                        ? '固定时间：学员需要在统一的班级时间段内参与学习。'
+                        : '学习周期：学员根据加入时间按周期参与学习。';
+                }
+            });
+        });
+
+        // 封面预览与大小检查
+        const coverInput = document.getElementById('coverInput');
+        const thumb = document.getElementById('thumb');
+        coverInput.addEventListener('change', (e)=>{
+            const f = e.target.files[0];
+            if(!f) return;
+            if(f.size > 2 * 1024 * 1024){
+                alert('图片超过2MB，请选择更小的图片。');
+                coverInput.value = '';
+                return;
+            }
+            const url = URL.createObjectURL(f);
+            thumb.innerHTML = '';
+            const img = document.createElement('img');
+            img.onload = ()=> URL.revokeObjectURL(url);
+            img.src = url;
+            thumb.appendChild(img);
+        });
+    })();
+
+    // 保存草稿（演示）
+    function saveDraft(){
+        const data = collect();
+        // 这里只是演示，可以改为 POST 请求
+        alert('已保存（演示）:\n' + JSON.stringify(data, null, 2));
+    }
+
+    // 下一步（演示验证）
+    function nextStep(){
+        const start = document.getElementById('start').value;
+        const end = document.getElementById('end').value;
+        if(!start || !end){ alert('请填写开始和结束时间。'); return; }
+        if(start > end){ alert('开始时间不能晚于结束时间。'); return; }
+        // 演示通过
+        alert('进入下一步（演示）');
+    }
+
+    function collect(){
+        const get = id => document.getElementById(id) ? document.getElementById(id).value : '';
+        const mode = document.querySelector('input[name="mode"]:checked').value;
+        return {
+            title: get('title'),
+            mode,
+            start: get('start'),
+            end: get('end'),
+            capacity: get('capacity'),
+            ptype: get('ptype'),
+            hours: get('hours'),
+            credits: get('credits'),
+            dept: get('dept'),
+            impl: get('impl'),
+            host: get('host')
+        };
+    }
+</script>
+</body>
+</html>

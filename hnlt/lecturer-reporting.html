@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>讲师管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            /* max-width: 1200px; */
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            color: white;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        h2 {
+            font-size: 18px;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+        
+        .header-actions {
+            position: absolute;
+            right: 30px;
+            top: 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-primary {
+            background: #e74c3c;
+            margin-left: 10px;
+        }
+        
+        .btn-primary:hover {
+            background: #c0392b;
+        }
+        
+        .table-container {
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+        
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .status-draft {
+            color: #f39c12;
+            font-weight: 500;
+        }
+        
+        .status-unreviewed {
+            color: #e74c3c;
+            font-weight: 500;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .view-btn {
+            background: #3498db;
+            color: white;
+        }
+        
+        .edit-btn {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .submit-btn {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .detail-btn {
+            background: #9b59b6;
+            color: white;
+        }
+        
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        footer {
+            padding: 15px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #eaeaea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #777;
+        }
+        
+        .pagination {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .page-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .page-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header-actions {
+                position: static;
+                margin-top: 15px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>&nbsp;</h1>
+            <h2>&nbsp;</h2>
+            <div class="header-actions">
+                <!-- <button class="btn">导出数据</button> -->
+                <button class="btn btn-primary"><a href="./lecturer-reporting-add.html" style="color:#fff;text-decoration: none;">新增讲师</a></button>
+            </div>
+        </header>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>讲师名称</th>
+                        <th>账号</th>
+                        <th>讲师类型</th>
+                        <th>共享讲师</th>
+                        <th>报送状态</th>
+                        <th>审核状态</th>
+                        <th>讲师级别</th>
+                        <th>讲师部门</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>吴志远</td>
+                        <td>wuzhiyuan</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td><span class="status-draft">草稿</span></td>
+                        <td><span class="status-unreviewed">未审核</span></td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn">查看</button>
+                                <button class="action-btn edit-btn"><a href="./lecturer-reporting-edit.html" style="color:#fff;text-decoration: none;">编辑</a></button>
+                                <button class="action-btn submit-btn">提交</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>康远</td>
+                        <td>kangyuan</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td><span class="status-draft">草稿</span></td>
+                        <td><span class="status-unreviewed">未审核</span></td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn">查看</button>
+                                <button class="action-btn detail-btn">审核详情</button>
+                                <button class="action-btn delete-btn">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>吴建华</td>
+                        <td>wujianhua</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td><span class="status-draft">草稿</span></td>
+                        <td><span class="status-unreviewed">未审核</span></td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn">查看</button>
+                                <button class="action-btn detail-btn">审核详情</button>
+                                <button class="action-btn delete-btn">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>文齐</td>
+                        <td>wenqi</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td><span class="status-draft">草稿</span></td>
+                        <td><span class="status-unreviewed">未审核</span></td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn">查看</button>
+                                <button class="action-btn detail-btn">审核详情</button>
+                                <button class="action-btn delete-btn">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>王志向</td>
+                        <td>wangzhixiang</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td><span class="status-draft">草稿</span></td>
+                        <td><span class="status-unreviewed">未审核</span></td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn">查看</button>
+                                <button class="action-btn detail-btn">审核详情</button>
+                                <button class="action-btn delete-btn">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>马志</td>
+                        <td>mazhi</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td><span class="status-draft">草稿</span></td>
+                        <td><span class="status-unreviewed">未审核</span></td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn">查看</button>
+                                <button class="action-btn detail-btn">审核详情</button>
+                                <button class="action-btn delete-btn">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>陈诺</td>
+                        <td>chennuo</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td><span class="status-draft">草稿</span></td>
+                        <td><span class="status-unreviewed">未审核</span></td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn">查看</button>
+                                <button class="action-btn detail-btn">审核详情</button>
+                                <button class="action-btn delete-btn">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>王强</td>
+                        <td>wangqiang</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td><span class="status-draft">草稿</span></td>
+                        <td><span class="status-unreviewed">未审核</span></td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn">查看</button>
+                                <button class="action-btn detail-btn">审核详情</button>
+                                <button class="action-btn delete-btn">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>欧阳璐璐</td>
+                        <td>ouyanglulu</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td><span class="status-draft">草稿</span></td>
+                        <td><span class="status-unreviewed">未审核</span></td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn">查看</button>
+                                <button class="action-btn detail-btn">审核详情</button>
+                                <button class="action-btn delete-btn">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>李丽</td>
+                        <td>lili</td>
+                        <td>内部讲师</td>
+                        <td>否</td>
+                        <td><span class="status-draft">草稿</span></td>
+                        <td><span class="status-unreviewed">未审核</span></td>
+                        <td>高级讲师</td>
+                        <td>培训部</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn">查看</button>
+                                <button class="action-btn detail-btn">审核详情</button>
+                                <button class="action-btn delete-btn">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <footer>
+            <div>共10条记录</div>
+            <div class="pagination">
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">下一页</button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 添加按钮交互效果
+        document.querySelectorAll('.action-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const action = this.textContent;
+                const row = this.closest('tr');
+                const name = row.cells[1].textContent;
+                
+                // alert(`执行操作: ${action} - 讲师: ${name}`);
+            });
+        });
+        
+        // 添加分页按钮交互
+        document.querySelectorAll('.page-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.page-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                if(this.textContent !== '下一页') {
+                    this.classList.add('active');
+                }
+            });
+        });
+        
+        // 添加表头排序功能
+        document.querySelectorAll('th').forEach(header => {
+            header.addEventListener('click', function() {
+                const index = Array.from(this.parentNode.children).indexOf(this);
+                alert(`按列排序: ${this.textContent}`);
+            });
+        });
+    </script>
+</body>
+</html>

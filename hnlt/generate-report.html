@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>报告管理系统</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义主题 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563eb',
+            success: '#10b981',
+            warning: '#f59e0b',
+            danger: '#ef4444',
+            neutral: '#f3f4f6',
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+      .transition-custom {
+        transition: all 0.25s ease-in-out;
+      }
+    }
+  </style>
+  
+  <style>
+    /* 全局样式 */
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    
+    /* 动画效果 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fadeIn {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+    
+    .status-badge {
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+  <!-- 顶部导航栏 -->
+  <!-- <header class="bg-white shadow-sm fixed w-full top-0 z-40">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center space-x-2">
+          <i class="fa fa-file-text-o text-primary text-2xl"></i>
+          <h1 class="text-xl font-semibold text-primary">报告管理系统</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="hidden md:block">
+            <span class="text-sm text-gray-600">欢迎，管理员</span>
+          </div>
+          <img src="https://picsum.photos/id/1005/40/40" alt="用户头像" class="w-8 h-8 rounded-full object-cover">
+        </div>
+      </div>
+    </div>
+  </header> -->
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 sm:px-6 lg:px-8 pb-16" style="max-width: 100%;">
+    <!-- 列表页面 -->
+    <section id="list-section" class="animate-fadeIn">
+      <div class="bg-white rounded-lg shadow-sm mb-6">
+        <div class="p-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold">报告列表</h2>
+        </div>
+        
+        <!-- 搜索区域 -->
+        <div class="p-4 border-b border-gray-200">
+          <div class="flex flex-col md:flex-row md:items-center gap-4">
+            <div class="flex-grow">
+              <label for="search" class="block text-sm font-medium text-gray-700 mb-1">报告名称搜索</label>
+              <div class="relative">
+                <input type="text" id="search" placeholder="请输入报告名称" 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom">
+                <i class="fa fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="flex gap-3 items-end">
+              <button id="reset-btn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-custom flex items-center gap-1">
+                <!-- <i class="fa fa-refresh"></i> -->
+                <span>重置</span>
+              </button>
+              <button id="query-btn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-custom flex items-center gap-1">
+                <!-- <i class="fa fa-search"></i> -->
+                <span>查询</span>
+              </button>
+              <button id="add-btn" class="px-4 py-2 bg-success text-white rounded-md hover:bg-success/90 transition-custom flex items-center gap-1" style="background-color: #d82525;">
+                <!-- <i class="fa fa-plus"></i> -->
+                <span>新增</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 列表区域 -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">序号</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">报告名称</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">生成时间</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作人</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <!-- 列表项1 -->
+              <tr class="hover:bg-gray-50 transition-custom">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">党支部画像综合情况分析报告</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2025-10-24 9:30:22</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">李政</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="whitespace-nowrap text-sm text-gray-500">已完成</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <a href="#" class="text-danger hover:text-danger/80 mr-3 view-report" data-id="1">查看</a>
+                  <!-- <a href="#" class="text-gray-600 hover:text-gray-900 mr-3">编辑</a> -->
+                  <a href="#" class="text-danger hover:text-danger/80">删除</a>
+                </td>
+              </tr>
+              
+              <!-- 列表项2 -->
+              <tr class="hover:bg-gray-50 transition-custom">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">党员画像分析报告</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2025-10-23 09:15:47</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">林峰</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="whitespace-nowrap text-sm text-gray-500">已完成</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <a href="#" class="text-danger hover:text-danger/80 mr-3 view-report" data-id="2">查看</a>
+                  <!-- <a href="#" class="text-gray-600 hover:text-gray-900 mr-3">编辑</a> -->
+                  <a href="#" class="text-danger hover:text-danger/80">删除</a>
+                </td>
+              </tr>
+              
+              <!-- 列表项3 -->
+              <tr class="hover:bg-gray-50 transition-custom">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">年度学习计划报告</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2025-10-22 16:42:11</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">贾鹏程</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="whitespace-nowrap text-sm text-gray-500">生成中</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <!-- <a href="#" class="text-primary hover:text-primary/80 mr-3 view-report" data-id="3">查看</a> -->
+                  <!-- <a href="#" class="text-gray-600 hover:text-gray-900 mr-3">编辑</a> -->
+                  <a href="#" class="text-danger hover:text-danger/80">删除</a>
+                </td>
+              </tr>
+              
+              <!-- 列表项4 -->
+              <tr class="hover:bg-gray-50 transition-custom">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">4</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">课程学习分析报告</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2025-10-21 11:08:33</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">吴晨</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="whitespace-nowrap text-sm text-gray-500">已失效</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <a href="#" class="text-danger hover:text-danger/80 mr-3 view-report" data-id="4">查看</a>
+                  <!-- <a href="#" class="text-gray-600 hover:text-gray-900 mr-3">编辑</a> -->
+                  <a href="#" class="text-danger hover:text-danger/80">删除</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- 分页区域 -->
+        <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+          <div class="text-sm text-gray-700">
+            显示 <span class="font-medium">1</span> 到 <span class="font-medium">4</span> 条，共 <span class="font-medium">24</span> 条记录
+          </div>
+          <div class="flex space-x-1">
+            <button class="px-3 py-1 border border-gray-300 rounded-md bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>
+              <i class="fa fa-chevron-left text-xs"></i>
+            </button>
+            <button class="px-3 py-1 border border-primary bg-primary text-white rounded-md" style="background-color: #d82525;border: none;">1</button>
+            <button class="px-3 py-1 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50">2</button>
+            <button class="px-3 py-1 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50">3</button>
+            <button class="px-3 py-1 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50">4</button>
+            <button class="px-3 py-1 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50">5</button>
+            <button class="px-3 py-1 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50">
+              <i class="fa fa-chevron-right text-xs"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 报告预览区域 (默认隐藏) -->
+    <section id="preview-section" class="hidden animate-fadeIn">
+      <div class="bg-white rounded-lg shadow-sm">
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+          <div class="flex items-center">
+            <button id="back-to-list" class="text-gray-600 hover:text-primary mr-4 transition-custom">
+              <i class="fa fa-arrow-left"></i>
+            </button>
+            <h2 class="text-lg font-semibold">报告预览</h2>
+          </div>
+          <button id="download-report" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-custom flex items-center gap-1">
+            <i class="fa fa-download"></i>
+            <span>下载报告</span>
+          </button>
+        </div>
+        
+        <!-- 报告内容 -->
+        <div class="p-6 md:p-8" style="max-width: 1000px;margin: 0 auto;">
+          <!-- 报告标题区域 -->
+          <div class="text-center mb-10 pb-6 border-b border-gray-200">
+            <h1 id="preview-title" class="text-2xl md:text-3xl font-bold mb-4">个人学习年度报告</h1>
+            <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-500">
+              <p><span class="font-medium text-gray-700">报告周期：</span><span id="preview-date-range">2025年1月1日 - 2025年10月24日</span></p>
+              <p><span class="font-medium text-gray-700">生成日期：</span><span id="preview-generated-date">2025年10月24日</span></p>
+              <p><span class="font-medium text-gray-700">报告人：</span><span id="preview-author">演示管理员</span></p>
+            </div>
+          </div>
+          
+          <!-- 报告正文 -->
+          <div class="prose max-w-none" style="line-height: 40px;">
+            <h2>一、报告摘要</h2>
+            <p>本报告围绕党支部的领导班子、党员构成、积分排名、组织建设等八项指标展开分析，通过对各项数据的梳理、图表呈现及趋势研判，总结党支部的优势与不足，提出针对性改进建议，为党支部进一步提升工作质量提供参考。</p>
+            <h2>二、各项指标分析</h2>
+
+            <h3>（一）领导班子</h3>
+            <p>领导班子是党支部的核心，其整体协作能力和领导水平直接影响党支部的工作成效。成员包括支部书记、副书记、组织委员、宣传委员、青年委员。</p>
+            <img src="https://cnooc.zhixueyun.com/hnlt/ldbz.png" alt="" srcset="" style="max-width: 800px;">
+            <p><strong>趋势分析：</strong>领导班子成员日趋年轻化，组织活力增强。</p>
+            <p><strong>不足：</strong>在线学习时长稍有欠缺。</p>
+            <p><strong>建议：</strong>建立考核机制，量化工作业绩与群众评价，定期评估领导班子表现。</p>
+
+            <h3>（二）党支部构成</h3>
+            <p>正式党员 37 人；预备党员 2 人；流动党员 1 人。正式党员占比 92.5%，预备党员 5%，流动党员 2.5%。</p>
+            <p><strong>建议：</strong>加强流动党员管理，建立信息库，定期联系沟通，增强归属感。</p>
+            <img src="https://cnooc.zhixueyun.com/hnlt/dzb.png" alt="" srcset="" style="max-width: 800px;">
+
+            <h3>（三）男女比例</h3>
+            <p>男党员 22 人，女党员 18 人，比例 11:9。性别比例较为均衡。</p>
+            <img src="https://cnooc.zhixueyun.com/hnlt/nvbl.png" alt="" srcset="" style="max-width: 800px;">
+            <p><strong>建议：</strong>在发展新党员时注重性别均衡，积极吸纳优秀女性党员。</p>
+
+            <h3>（四）党员年龄结构</h3>
+            <p>25-35 岁占比 32%；36-45 岁占比 28%；46 岁以上占比 40%。</p>
+            <img src="https://cnooc.zhixueyun.com/hnlt/nvbl.png" alt="" srcset="" style="max-width: 800px;">
+            <p><strong>建议：</strong>加大青年党员培养，优化年龄结构，促进传帮带。</p>
+
+            <h3>（五）积分排名</h3>
+            <p>前 5 名：丁宇宁（95 分）、杨斌（90 分）、王浩（88 分）、秦岚彭（85 分）、蒋欣新（78 分）。</p>
+            <img src="https://cnooc.zhixueyun.com/hnlt/jfpm.png" alt="" srcset="" style="max-width: 800px;">
+            <p><strong>建议：</strong>完善积分制度，奖优罚懒，激发党员积极性。</p>
+
+            <h3>（六）组织建设</h3>
+            <p>思想建设 93；宣传建设 96；作风建设 94；制度建设 95。综合评定第一名。</p>
+            <img src="https://cnooc.zhixueyun.com/hnlt/zbgs.png" alt="" srcset="" style="max-width: 800px;">
+            <p><strong>建议：</strong>进一步强化思想政治教育，完善制度建设。</p>
+
+            <h3>（七）“三会一课”</h3>
+            <p>思想建设效果好、纪律性强、开展频繁及时。</p>
+            <img src="https://cnooc.zhixueyun.com/hnlt/shyk.png" alt="" srcset="" style="max-width: 800px;">
+            <p><strong>建议：</strong>丰富内容形式，结合党员需求，提升参与度。</p>
+
+            <h3>（八）综合分析</h3>
+            <p>综合评价：模范支部；平均年龄 40 岁；高学历占比 50%；思想觉悟 98%。</p>
+            <img src="https://cnooc.zhixueyun.com/hnlt/zhfx.png" alt="" srcset="" style="max-width: 800px;">
+            <p><strong>建议：</strong>优化工作流程，创新精神传递方式，提升效率与执行力。</p>
+
+            <h2>三、综合结论</h2>
+            <p>该党支部在领导班子、组织建设和“三会一课”等方面成绩显著，党员结构合理，思想觉悟高。但需继续加强流动党员管理与青年党员培养，优化效率与精神传递机制，持续提升支部整体战斗力和凝聚力。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <!-- <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center text-gray-500 text-sm">
+        <p>© 2023 报告管理系统 版权所有</p>
+      </div>
+    </div>
+  </footer> -->
+
+  <!-- 新增报告弹窗 (默认隐藏) -->
+  <div id="add-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg w-full mx-4 animate-fadeIn" style="width: 800px !important;">
+      <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+        <h3 class="text-lg font-semibold">新增报告</h3>
+        <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="p-5">
+        <form id="add-report-form" class="space-y-4">
+          <!-- 报告名称 -->
+          <div>
+            <label for="report-name" class="block text-sm font-medium text-gray-700 mb-1">报告名称 <span class="text-red-500">*</span></label>
+            <input type="text" id="report-name" placeholder="请输入报告名称" 
+                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom">
+          </div>
+          
+          <!-- 模板选择 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">选择模板 <span class="text-red-500">*</span></label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-custom">
+                <input type="radio" name="template" id="template-personal" value="personal" class="hidden peer" checked>
+                <label for="template-personal" class="cursor-pointer block">
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium">个人学习报告</span>
+                    <i class="fa fa-check-circle text-primary opacity-0 peer-checked:opacity-100 transition-custom"></i>
+                  </div>
+                </label>
+              </div>
+              
+              <div class="border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-custom">
+                <input type="radio" name="template" id="template-team" value="team" class="hidden peer">
+                <label for="template-team" class="cursor-pointer block">
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium">团队学习报告</span>
+                    <i class="fa fa-check-circle text-primary opacity-0 peer-checked:opacity-100 transition-custom"></i>
+                  </div>
+                </label>
+              </div>
+              
+              <div class="border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-custom">
+                <input type="radio" name="template" id="template-course" value="course" class="hidden peer">
+                <label for="template-course" class="cursor-pointer block">
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium">课程学习报告</span>
+                    <i class="fa fa-check-circle text-primary opacity-0 peer-checked:opacity-100 transition-custom"></i>
+                  </div>
+                </label>
+              </div>
+              
+              <div class="border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-custom">
+                <input type="radio" name="template" id="template-project" value="project" class="hidden peer">
+                <label for="template-project" class="cursor-pointer block">
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium">项目学习报告</span>
+                    <i class="fa fa-check-circle text-primary opacity-0 peer-checked:opacity-100 transition-custom"></i>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 数据时间范围 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="data-start-date" class="block text-sm font-medium text-gray-700 mb-1">开始日期 <span class="text-red-500">*</span></label>
+              <input type="date" id="data-start-date" 
+                     class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom">
+            </div>
+            <div>
+              <label for="data-end-date" class="block text-sm font-medium text-gray-700 mb-1">结束日期 <span class="text-red-500">*</span></label>
+              <input type="date" id="data-end-date" 
+                     class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom">
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <div class="p-4 border-t border-gray-200 flex justify-end gap-3">
+        <button id="cancel-add" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-custom">取消</button>
+        <button id="confirm-add" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-custom">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 下载成功提示 -->
+  <div id="download-toast" class="fixed bottom-6 right-6 bg-green-500 text-white px-4 py-3 rounded-md shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2 z-50">
+    <i class="fa fa-check-circle"></i>
+    <span>报告下载成功</span>
+  </div>
+
+  <script>
+    // 获取DOM元素
+    const listSection = document.getElementById('list-section');
+    const previewSection = document.getElementById('preview-section');
+    const addModal = document.getElementById('add-modal');
+    const downloadToast = document.getElementById('download-toast');
+    
+    const addBtn = document.getElementById('add-btn');
+    const closeModal = document.getElementById('close-modal');
+    const cancelAdd = document.getElementById('cancel-add');
+    const confirmAdd = document.getElementById('confirm-add');
+    const backToList = document.getElementById('back-to-list');
+    const downloadReport = document.getElementById('download-report');
+    const resetBtn = document.getElementById('reset-btn');
+    const queryBtn = document.getElementById('query-btn');
+    const searchInput = document.getElementById('search');
+    
+    const previewTitle = document.getElementById('preview-title');
+    const previewDateRange = document.getElementById('preview-date-range');
+    const previewGeneratedDate = document.getElementById('preview-generated-date');
+    
+    // 查看报告链接
+    const viewReportLinks = document.querySelectorAll('.view-report');
+    
+    // 打开新增报告弹窗
+    addBtn.addEventListener('click', function() {
+      addModal.classList.remove('hidden');
+      // 设置默认日期范围为当前年度
+      const today = new Date();
+      const year = today.getFullYear();
+      document.getElementById('data-start-date').value = `${year}-01-01`;
+      document.getElementById('data-end-date').value = today.toISOString().split('T')[0];
+    });
+    
+    // 关闭新增报告弹窗
+    function closeAddModal() {
+      addModal.classList.add('hidden');
+    }
+    
+    closeModal.addEventListener('click', closeAddModal);
+    cancelAdd.addEventListener('click', closeAddModal);
+    
+    // 点击弹窗外部关闭
+    addModal.addEventListener('click', function(e) {
+      if (e.target === addModal) {
+        closeAddModal();
+      }
+    });
+    
+    // 确认新增报告，跳转到预览页面
+    confirmAdd.addEventListener('click', function() {
+      const reportName = document.getElementById('report-name').value;
+      const startDate = document.getElementById('data-start-date').value;
+      const endDate = document.getElementById('data-end-date').value;
+      
+      // 简单验证
+      if (!reportName || !startDate || !endDate) {
+        alert('请填写所有必填字段');
+        return;
+      }
+      
+      // 格式化日期显示
+      const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+      };
+      
+      // 更新预览页面内容
+      previewTitle.textContent = reportName;
+      previewDateRange.textContent = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+      
+      // 设置生成日期为当前日期
+      const today = new Date();
+      previewGeneratedDate.textContent = today.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+      
+      // 关闭弹窗，切换到预览页面
+      closeAddModal();
+      listSection.classList.add('hidden');
+      previewSection.classList.remove('hidden');
+    });
+    
+    // 返回列表页面
+    backToList.addEventListener('click', function() {
+      previewSection.classList.add('hidden');
+      listSection.classList.remove('hidden');
+    });
+    
+    // 查看报告
+    viewReportLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const reportId = this.getAttribute('data-id');
+        
+        // 根据报告ID设置不同的预览内容
+        switch(reportId) {
+          case '1':
+            previewTitle.textContent = '党支部画像综合情况分析报告';
+            previewDateRange.textContent = '2025年10月1日 - 2025年10月24日';
+            break;
+          case '2':
+            previewTitle.textContent = '党员画像分析报告';
+            previewDateRange.textContent = '2025年10月1日 - 2025年10月24日';
+            break;
+          case '3':
+            previewTitle.textContent = '年度学习计划报告';
+            previewDateRange.textContent = '2025年10月1日 - 2025年10月24日';
+            break;
+          case '4':
+            previewTitle.textContent = '课程学习分析报告';
+            previewDateRange.textContent = '2025年10月1日 - 2025年10月24日';
+            break;
+        }
+        
+        // 设置生成日期为当前日期
+        const today = new Date();
+        previewGeneratedDate.textContent = today.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+        
+        // 切换到预览页面
+        listSection.classList.add('hidden');
+        previewSection.classList.remove('hidden');
+      });
+    });
+    
+    // 下载报告
+    downloadReport.addEventListener('click', function() {
+      // 模拟下载过程
+      this.innerHTML = '<i class="fa fa-spinner fa-spin"></i><span>正在下载...</span>';
+      this.disabled = true;
+      
+      setTimeout(() => {
+        // 恢复按钮状态
+        this.innerHTML = '<i class="fa fa-download"></i><span>下载报告</span>';
+        this.disabled = false;
+        window.location.href= "http://cnooc.zhixueyun.com/2025%E5%B9%B4%E5%AD%A6%E4%B9%A0%E6%8A%A5%E5%91%8A.docx";
+        // 显示下载成功提示
+        downloadToast.classList.remove('translate-y-20', 'opacity-0');
+        
+        // 3秒后隐藏提示
+        setTimeout(() => {
+          downloadToast.classList.add('translate-y-20', 'opacity-0');
+        }, 3000);
+      }, 1500);
+    });
+    
+    // 搜索功能
+    queryBtn.addEventListener('click', function() {
+      const searchText = searchInput.value.trim();
+      if (searchText) {
+        alert(`搜索报告: ${searchText}`);
+        // 实际应用中这里会发起搜索请求
+      } else {
+        alert('请输入搜索内容');
+      }
+    });
+    
+    // 重置搜索
+    resetBtn.addEventListener('click', function() {
+      searchInput.value = '';
+    });
+    
+    // 按Enter键搜索
+    searchInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        queryBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>故障报修码</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .qr-code {
+            width: 80%;
+            max-width: 300px;
+            margin-bottom: 15px;
+        }
+        .desc {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .tip {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        .download-btn {
+            background-color: #07c160;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 80%;
+            max-width: 200px;
+        }
+        .download-btn:hover {
+            background-color: #05a852;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="http://cnooc.zhixueyun.com/hnlt/%E6%95%85%E9%9A%9C%E6%8A%A5%E4%BF%AE%E7%A0%812.png" alt="故障报修码" class="qr-code">
+        <p class="desc">故障报修码</p>
+        <p class="tip">微信扫一扫 立即报障</p>
+        <button class="download-btn" onclick="downloadQRCode()">下载二维码</button>
+    </div>
+
+    <script>
+        function downloadQRCode() {
+            // 这里需要替换为你的二维码图片真实路径
+            // const qrCodeUrl = 'http://cnooc.zhixueyun.com/hnlt/%E6%95%85%E9%9A%9C%E6%8A%A5%E4%BF%AE%E7%A0%812.png';
+            // const link = document.createElement('a');
+            // link.href = qrCodeUrl;
+            // link.download = 'http://cnooc.zhixueyun.com/hnlt/%E6%95%85%E9%9A%9C%E6%8A%A5%E4%BF%AE%E7%A0%812.png';
+            // document.body.appendChild(link);
+            // link.click();
+            // document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

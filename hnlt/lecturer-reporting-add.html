@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>讲师信息编辑</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        header {
+            background: #d82525;
+            color: white;
+            padding: 15px 30px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .input-container {
+            position: relative;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .char-count {
+            position: absolute;
+            right: 10px;
+            top: 12px;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .error-message::before {
+            content: "!";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 5px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .radio-option input {
+            width: auto;
+        }
+        
+        .row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .col {
+            flex: 1;
+        }
+        
+        .editor-toolbar {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+        
+        .editor-btn {
+            padding: 6px 10px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .editor-btn:hover {
+            background: #e9ecef;
+        }
+        
+        .upload-container {
+            border: 2px dashed #bdc3c7;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            margin-top: 10px;
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+        
+        .upload-container:hover {
+            border-color: #3498db;
+            background: #f0f7ff;
+        }
+        
+        .upload-icon {
+            font-size: 40px;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        
+        .upload-text {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .upload-btn {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .upload-btn:hover {
+            background: #2980b9;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-reset {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-reset:hover {
+            background: #d5d5d5;
+        }
+        
+        .btn-submit {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            background: #27ae60;
+        }
+        
+        .btn-close {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-close:hover {
+            background: #c0392b;
+        }
+        
+        @media (max-width: 768px) {
+            .row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>新增/编辑</h1>
+        </header>
+        
+        <div class="form-container">
+            <form id="lecturerForm">
+                <div class="form-group">
+                    <label for="name">讲师名称 <span class="char-count">0/100</span></label>
+                    <div class="input-container">
+                        <input type="text" id="name" name="name" placeholder="请输入讲师名称" maxlength="100" required>
+                    </div>
+                    <div class="error-message">讲师名称为必填项</div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="gender">性别</label>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" id="female" name="gender" value="female" checked>
+                                    <label for="female">女</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="male" name="gender" value="male">
+                                    <label for="male">男</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="level">讲师级别</label>
+                            <select id="level" name="level">
+                                <option value="">请选择讲师级别</option>
+                                <option value="senior">高级讲师</option>
+                                <option value="intermediate">中级讲师</option>
+                                <option value="junior">初级讲师</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="shared">共享讲师</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="shared-yes" name="shared" value="yes">
+                            <label for="shared-yes">是</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="shared-no" name="shared" value="no" checked>
+                            <label for="shared-no">否</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="email">邮箱</label>
+                            <input type="email" id="email" name="email" placeholder="请输入邮箱地址">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="phone">手机号码</label>
+                            <input type="tel" id="phone" name="phone" placeholder="请输入手机号码">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="position">服务/职称</label>
+                    <input type="text" id="position" name="position" placeholder="请输入服务或职称">
+                </div>
+                
+                <div class="form-group">
+                    <label for="intro">简介</label>
+                    <div class="editor-toolbar">
+                        <button type="button" class="editor-btn">B</button>
+                        <button type="button" class="editor-btn">U</button>
+                        <button type="button" class="editor-btn">I</button>
+                        <button type="button" class="editor-btn">A</button>
+                    </div>
+                    <textarea id="intro" name="intro" rows="5" placeholder="请输入讲师简介"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>编辑封面</label>
+                    <div class="upload-container">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">上传1440*810px，且小于500KB的图片</div>
+                        <button type="button" class="upload-btn">选择图片</button>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-reset">重置</button>
+                    <button type="submit" class="btn btn-submit">提交</button>
+                    <button type="button" class="btn btn-close">关闭</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 字符计数功能
+        const nameInput = document.getElementById('name');
+        const charCount = document.querySelector('.char-count');
+        
+        nameInput.addEventListener('input', function() {
+            const count = this.value.length;
+            charCount.textContent = `${count}/100`;
+            
+            if (count > 0) {
+                document.querySelector('.error-message').style.display = 'none';
+            } else {
+                document.querySelector('.error-message').style.display = 'flex';
+            }
+        });
+        
+        // 表单提交处理
+        document.getElementById('lecturerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (nameInput.value.trim() === '') {
+                document.querySelector('.error-message').style.display = 'flex';
+                nameInput.focus();
+                return;
+            }
+            
+            // 在实际应用中，这里会发送表单数据到服务器
+            alert('讲师信息提交成功！');
+        });
+        
+        // 重置按钮功能
+        document.querySelector('.btn-reset').addEventListener('click', function() {
+            document.getElementById('lecturerForm').reset();
+            charCount.textContent = '0/100';
+            document.querySelector('.error-message').style.display = 'flex';
+        });
+        
+        // 关闭按钮功能
+        document.querySelector('.btn-close').addEventListener('click', function() {
+            if (confirm('确定要关闭吗？未保存的信息将会丢失。')) {
+                // 在实际应用中，这里会关闭窗口或返回上一页
+                alert('已关闭编辑窗口');
+            }
+        });
+        
+        // 编辑器按钮功能
+        document.querySelectorAll('.editor-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                alert(`格式按钮: ${this.textContent}`);
+            });
+        });
+        
+        // 上传按钮功能
+        document.querySelector('.upload-btn').addEventListener('click', function() {
+            alert('打开文件选择器');
+        });
+    </script>
+</body>
+</html>
