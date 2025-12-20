@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>红色主题加载页面</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#E63946', // 主红色
+            darkRed: '#D62828', // 深红色
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style>
+    /* 全局样式 */
+    body {
+      background-color: #ffffff;
+      overflow: hidden;
+    }
+    
+    /* 加载动画 */
+    .loader {
+      position: relative;
+      width: 100px;
+      height: 100px;
+    }
+    
+    .loader-circle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      animation: rotate 2s linear infinite;
+    }
+    
+    .loader-circle:nth-child(1) {
+      border-top-color: #E63946;
+    }
+    
+    .loader-circle:nth-child(2) {
+      border-top-color: #D62828;
+      animation-delay: 0.5s;
+    }
+    
+    .loader-circle:nth-child(3) {
+      border-top-color: #E63946;
+      animation-delay: 1s;
+    }
+    
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+  <!-- 加载动画 -->
+  <div class="loader">
+    <div class="loader-circle"></div>
+    <div class="loader-circle"></div>
+    <div class="loader-circle"></div>
+    <div class="absolute inset-0 flex items-center justify-center">
+      <i class="fa fa-circle-o-notch fa-spin text-primary text-2xl"></i>
+    </div>
+  </div>
+  
+  <script>
+    // 模拟页面加载完成后跳转（实际使用时替换为真实逻辑）
+    setTimeout(() => {
+      // 这里可以添加加载完成后的过渡动画
+      document.body.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+      
+      // 延迟后跳转
+      setTimeout(() => {
+        window.location.href = "https://zh.ecflow.com.cn:12443/busmgt/#/login?loginId=hnys01@test.com&pwd=hnys_2025&autoLogin=1";
+      }, 500);
+    }, 8000);
+  </script>
+</body>
+</html>

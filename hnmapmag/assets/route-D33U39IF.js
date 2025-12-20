@@ -1,0 +1,1 @@
+import{Y as e}from"./index-FD2FdfPd.js";const u=t=>e({url:"/routes",method:"get",params:t}),s=t=>e({url:`/routes/${t}`,method:"get"}),a=t=>e({url:"/routes",method:"post",data:t}),n=(t,r)=>e({url:`/routes/${t}`,method:"put",data:r});export{s as a,a as c,u as g,n as u};

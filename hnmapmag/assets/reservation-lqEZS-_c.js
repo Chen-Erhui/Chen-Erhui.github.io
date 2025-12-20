@@ -1,0 +1,1 @@
+import{Y as t}from"./index-FD2FdfPd.js";const o=e=>t({url:"/reservations",method:"get",params:e}),a=e=>t({url:`/reservations/${e}`,method:"get"}),n=(e,r)=>t({url:`/reservations/${e}/audit`,method:"put",data:r}),u=(e,r)=>t({url:`/reservations/${e}`,method:"put",data:r});export{n as a,a as b,o as g,u};

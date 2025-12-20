@@ -1,0 +1,1 @@
+import{Y as o,a6 as i,r as a,E as n}from"./index-FD2FdfPd.js";const v=()=>o({url:"/statistics/overview",method:"get"}),l=i("statistics",()=>{const r=a({}),t=a(!1),s=async()=>{t.value=!0;try{const e=await v();return r.value=e,e}catch(e){throw n.error("获取统计数据失败"),e}finally{t.value=!1}};return{overview:r,loading:t,getOverview:s,getOverviewStats:async()=>s()}});export{l as u};
